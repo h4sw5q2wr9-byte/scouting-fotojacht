@@ -29,7 +29,7 @@ with sync_playwright() as p:
   rows=json.loads(z.read('results.json'));assert rows[0]['bestPose'] is True
   assert 'LICENTIES.txt' in z.namelist() and 'docs/user-reference-uploads.md' in z.namelist()
   assert any(n.endswith('-credits.txt') for n in z.namelist())
-  assert 'docs/user-reference-uploads.md' in z.read('index.html').decode()
+  assert items[0]['licenseUrl'] in z.read('index.html').decode()
  expect(page.locator('#shareZip')).to_be_visible();page.locator('#shareZip').click();expect(page.locator('#exportStatus')).to_contain_text('gedeeld');assert page.evaluate('window.sharedFile.size')>10000
  page.evaluate('window.shareFailure="AbortError"');page.locator('#shareZip').click();expect(page.locator('#exportStatus')).to_contain_text('geannuleerd')
  page.evaluate('window.shareFailure="NotAllowedError"');page.locator('#shareZip').click();expect(page.locator('#exportStatus')).to_contain_text('Downloads / Bestanden')

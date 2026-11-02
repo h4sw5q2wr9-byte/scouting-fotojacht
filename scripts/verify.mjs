@@ -6,7 +6,7 @@ const ctx = { window: {} };
 vm.runInNewContext(fs.readFileSync("challenges.js", "utf8"), ctx);
 const data = ctx.window.FOTOJACHT_LOCAL_REFERENCES;
 assert(
-  data.length >= 16 && data.length <= 45,
+  data.length >= 16 && data.length <= 70,
   "Keep a small, complete local-photo deck",
 );
 assert.equal(new Set(data.map((i) => i.id)).size, data.length);

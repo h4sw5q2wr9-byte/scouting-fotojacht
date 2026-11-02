@@ -2,12 +2,12 @@
 
 **Live:** https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/
 
-Eén groep per telefoon. **39 lokaal ingebouwde referenties**: Grappige interacties, komische scènes en overdreven reacties. **34 groepskaarten**, plus 5 solo-reacties (één daarvan ook met twee personen). Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
+Eén groep per telefoon. **50 lokaal ingebouwde referenties**: Grappige interacties, komische scènes en overdreven reacties. **44 groepskaarten**, plus 6 solo-reacties (één daarvan ook met twee personen). Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
 
 ## Vanavond gebruiken
 
 1. Open de site en lees de vier korte stappen. De **?** rechtsboven opent de uitleg opnieuw.
-2. Kies **Alle 39 kaarten** of **Verras ons**. De kiezer toont alle kaarten, met de tien aangeleverde memes vooraan. Zoek op titel of filter op spelers. Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
+2. Kies **Alle 50 kaarten** of **Verras ons**. De kiezer toont alle kaarten, met de tien aangeleverde memes vooraan. Zoek op titel of filter op spelers. Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
 3. Kies **Maak jullie versie**, maak of kies een foto en tik **Bewaar & vergelijk**.
 4. Bekijk beide foto’s naast elkaar en ga door naar de volgende kaart. Er blijft **één foto per opdracht** bewaard; een nieuwe versie vervangt de vorige na bevestiging.
 5. Tik onderaan op **Jullie foto’s**, daarna op de grote knop **Download ZIP**.
@@ -77,3 +77,9 @@ Extra controle: `python scripts/browser-sharing.py` (gemockt deelmenu; verstuurt
 ## Fotodeck voor de Scoutingavond
 Zes extra, visueel gecontroleerde groepsfoto’s: wedding dab (2), Gangnam Style-liftscène (2), Titanic-pose (2), Bert en Ernie (2), kabouterdans met dikke buiken (3), Team Rocket en Pikachu (3). De aanwijzingen volgen de echte foto’s en bieden eenvoudige alternatieven voor kostuums. Geen nieuwe spelelementen. Alle eerdere kaarten, favorieten en eigen foto’s blijven bewaard. Totaal: 39 kaarten, waarvan 34 groepsopdrachten. Deze zes nieuwe referenties zijn herbruikbare echte foto’s; cosplay is als zodanig vermeld in de credits. Foto’s van poppen, een grote klas en dubbele dab-/Team Rocket-poses zijn na visuele controle niet toegevoegd.
 Herstelpunt: `before-scout-night-photos-2026-11-02`.
+
+
+## Meer actie: 50 foto’s
+Elf nieuwe referenties: vierpersoons-dab, NASA Gangnam Style (vier dansers), YMCA-letters, Star Wars-disco, Macarena-les, vier verdwaalde Teletubbies, floss met een koe, vier dramatische denkers, Obama en Biden die rennen, Obama met de paashaas en een echte Naruto-run (stilstaand frame uit de brongif). Alle referenties zijn lokaal, met WebP/JPEG en credits. De beperkte uitsnedes en het gekozen GIF-frame staan in de metadata. Geen speelgoed- of AI-foto’s toegevoegd. Er zijn 44 groepsopdrachten en 6 solo-kaarten.
+
+De app begint na deze update bij de groeps-dab. **Actie & dans** opent alle actiekaarten direct. **Alle 50 kaarten** wist zoek-, categorie- en spelersfilters zodat een oud filter geen nieuwe beelden verstopt. Bestaande foto’s en favorieten blijven behouden. Herstelpunt: `before-action-deck-2026-11-02`.

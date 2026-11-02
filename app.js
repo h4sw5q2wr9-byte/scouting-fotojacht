@@ -20,10 +20,10 @@
   try {
     prefs = { ...prefs, ...JSON.parse(localStorage.getItem(PREFS) || "{}") };
   } catch {}
-  if (prefs.contentRelease !== "user-memes-v2.2") {
+  if (prefs.contentRelease !== "action-night-v2.4") {
     prefs.challengeId = data[0]?.id;
     prefs.playerFilter = "all";
-    prefs.contentRelease = "user-memes-v2.2";
+    prefs.contentRelease = "action-night-v2.4";
     try { localStorage.setItem(PREFS, JSON.stringify(prefs)); } catch {}
   }
   if (!byId.has(prefs.challengeId)) prefs.challengeId = data[0]?.id;
@@ -275,8 +275,8 @@
       );
     const items = playable().filter(
       (item) =>
-        matchesPlayers(item) && (!category || item.category === category) &&
-        item.title.toLocaleLowerCase("nl").includes($("challengeSearch").value.trim().toLocaleLowerCase("nl")),
+        matchesPlayers(item) && (!category || item.category === category || (category === "Actie & dans" && item.action)) &&
+        (item.title + " " + item.description).toLocaleLowerCase("nl").includes($("challengeSearch").value.trim().toLocaleLowerCase("nl")),
     );
     $("pickerGrid").innerHTML =
       items
@@ -317,7 +317,19 @@
     persist();
     renderPicker();
   });
+  $("actionDeck").addEventListener("click", () => {
+    prefs.playerFilter = "all";
+    category = "Actie & dans";
+    $("challengeSearch").value = "";
+    persist();
+    renderPicker();
+    openDialog("pickerDialog");
+  });
   $("browse").addEventListener("click", () => {
+    prefs.playerFilter = "all";
+    category = "";
+    $("challengeSearch").value = "";
+    persist();
     renderPicker();
     openDialog("pickerDialog");
   });

@@ -38,6 +38,8 @@ with sync_playwright() as p:
  page.locator('#browse').click();page.locator('#playerFilter').select_option('1');expect(page.locator('.picker-card')).to_have_count(SOLO)
  page.locator('#playerFilter').select_option('all');expect(page.locator('.picker-card')).to_have_count(TOTAL)
  page.locator('#challengeSearch').fill('Spider-Man');expect(page.locator('.picker-card')).to_have_count(1);page.locator('#challengeSearch').fill('')
+ page.locator('[data-close="pickerDialog"]').click();page.locator('#actionDeck').click();expect(page.locator('.picker-card')).to_have_count(sum(bool(x.get('action')) for x in ITEMS));expect(page.locator('#pickerGrid')).to_contain_text('Gangnam');expect(page.locator('#pickerGrid')).to_contain_text('Dab squad')
+ page.locator('#challengeSearch').fill('NASA');expect(page.locator('.picker-card')).to_have_count(1);page.locator('[data-close="pickerDialog"]').click();page.locator('#browse').click();expect(page.locator('.picker-card')).to_have_count(TOTAL);expect(page.locator('#challengeSearch')).to_have_value('');expect(page.locator('#playerFilter')).to_have_value('all')
  page.locator('[data-category="Memes"]').click();assert page.locator('.picker-card').count()>=4;page.locator('.picker-card').first.click();expect(page.locator('#pickerDialog')).not_to_be_visible()
  page.locator('[data-page="album"]').click();expect(page.locator('.album-card')).to_have_count(2);page.locator('.group-options summary').click();page.locator('#groupName').fill('Vossen & Scouts')
  with page.expect_download(timeout=30000) as event:page.locator('#downloadZip').click()
@@ -57,5 +59,5 @@ with sync_playwright() as p:
  page.reload();expect(page.locator('.album-card')).to_have_count(1)
  page.locator('#help').click();expect(page.locator('#tutorialDialog')).to_be_visible();page.locator('#startPlaying').click()
  assert not errors,errors;assert not writes,writes
- print('PASS V2: tutorial, 39 decoded local images and player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
+ print('PASS V2: tutorial, 50 decoded local images and player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
  browser.close()

@@ -37,11 +37,11 @@ with sync_playwright() as p:
  assert not errors,errors
  # Complete worker install caches public references, not personal media.
  offline=browser.new_context(service_workers='allow');tab=offline.new_page();tab.goto(URL+'?v=2');tab.locator('#startPlaying').click();tab.evaluate('navigator.serviceWorker.ready');tab.wait_for_function('navigator.serviceWorker.controller!==null')
- cached=tab.evaluate('''async()=>{const c=await caches.open('fotojacht-deck-v2.3.1');return (await c.keys()).map(r=>new URL(r.url).pathname)}''')
+ cached=tab.evaluate('''async()=>{const c=await caches.open('fotojacht-deck-v2.4.0');return (await c.keys()).map(r=>new URL(r.url).pathname)}''')
  for item in json.loads((ROOT/'assets/references/sources.json').read_text())['items']:
   assert '/'+item['image'] in cached
   assert '/'+item['previewImage'] in cached
  assert not any('/photos/' in path or 'blob:' in path for path in cached)
  offline.set_offline(True);tab.reload();expect(tab.locator('#reference')).to_have_js_property('complete',True);assert tab.locator('#reference').evaluate('(e)=>e.naturalWidth>0');tab.locator('#browse').click();expect(tab.locator('.picker-card')).to_have_count(TOTAL)
  offline.close();browser.close()
- print('PASS: original v1 photo recovery/legacy ZIP without data loss; broken refs hidden/no search detours; storage denied fails clearly; full 39-image deck and app load offline after worker install, with no personal photos in Cache Storage.')
+ print('PASS: original v1 photo recovery/legacy ZIP without data loss; broken refs hidden/no search detours; storage denied fails clearly; full 50-image deck and app load offline after worker install, with no personal photos in Cache Storage.')
