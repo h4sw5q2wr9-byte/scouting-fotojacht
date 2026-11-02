@@ -1,22 +1,32 @@
-# Verification
+# Verification — 2026-11-02
 
-Run date: 2026-11-02.
+## Live social-preview change (main)
 
-## Automated checks
+Commit `670a38e` changed only `index.html` metadata and `assets/og-image.png`. The challenge library and gameplay scripts/styles were unchanged in that commit.
 
-- `node scripts/verify.mjs`: 145 unique IDs and titles, all original 125 IDs, required fields, 11 local sources and assets, valid JavaScript and unique HTML IDs.
-- `python scripts/browser-smoke.py`: Chromium at 390 × 844 with touch/mobile emulation. Search and categories, local-photo filter, random empty state, favorites and reload persistence, previous/next, skip, timer start, recreation upload/delete and IndexedDB persistence, score award with duplicate prevention, team name, full-screen reference viewer. Desktop layout at 1440px. No JavaScript page errors.
-- `python scripts/browser-edge-cases.py`: responsive widths 320/375/390/768/1440px; repository URL prefix; every local reference decodes; timer duration/deadline survives reload and an expired deadline reaches zero; missing-image fallback; invalid score rejected. No JavaScript page errors.
-- `git diff --check`.
+- Exact PNG dimensions verified: **1200 × 630**.
+- Open Graph and Twitter metadata include title, description, alt text and the same absolute HTTPS image URL.
+- The published site returned the new metadata to a request using a WhatsApp user-agent, without executing JavaScript.
+- The public PNG returned HTTP 200 with `image/png`; Pages workflow [41478823241](https://github.com/h4sw5q2wr9-byte/scouting-fotojacht/actions/runs/41478823241) succeeded.
+- This verifies crawlability and metadata, not the internal cache/UI of every messaging platform. Previously shared links may retain cached previews.
 
-For browser tests install Python Playwright and Chromium. Start a repository-only server on localhost port 8765 for `browser-smoke.py`; `browser-edge-cases.py` starts its own server. Optional `FOTOJACHT_URL` changes the smoke test target. These tools are for development and are not shipped as dependencies to visitors.
+## Simplified private-team branch
 
-## Limits
+`config.js` is blank. No Supabase connection or live private-photo deployment has been confirmed. All cloud-interface tests below use mocks, and SQL tests use disposable PostgreSQL fixtures. They do not prove a live backend is configured.
 
-Touch emulation checks mobile layout and interaction, but is not a physical iPhone Safari test. A WebKit browser download was attempted; missing host libraries prevented running it here. Native iPhone camera selection, HEIC decoding and behavior under OS memory pressure should still be checked on a device. The app relies on standard file inputs, uses 16px form fonts, safe-area spacing, dynamic viewport height and wall-clock deadlines to accommodate Safari.
+- `node scripts/verify.mjs`: all 145 unique original library entries/IDs, all 11 local references and source records, assets, JavaScript syntax, exact preview PNG dimensions, Open Graph/Twitter tags, and rejection of secret/service-role keys in frontend configuration.
+- `python scripts/browser-smoke.py`: Chromium mobile/touch at 390×844; working inline reference; safe disabled uploads while unconfigured; picker exposes 11 inline references or all 145 with search-link opt-in; search, timer, favorites after reload, three-tab navigation, responsive widths 320/375/390/768/1440px. No JavaScript page errors.
+- `python scripts/browser-edge-cases.py`: repository URL prefix; old IndexedDB recreation photos remain visible locally, can be exported/deleted, and are not automatically uploaded; old custom reference survives; missing-image fallback; expired timer and selected duration across reloads. No JavaScript page errors.
+- `python scripts/browser-cloud-mock.py`: actual vendored Supabase SDK against mocked network responses; login/team selection, no upload before confirmation, JPEG conversion without original EXIF, bearer-authenticated image fetches, per-team album and scores, session/album after reload, individual download and self-contained team export, invitation/member removal, photo deletion and logout media cleanup. No JavaScript page errors. Mocked browser contexts block service workers so intercepted backend/config responses are deterministic.
+- `backend/test-access.sql` executed against a disposable **PostgreSQL 17** container with real RLS and fixtures for Supabase's Auth/Storage schemas. Passed: owner/member access, outsider and anonymous denial, unauthorized upload/metadata insertion denial, uploader-folder impersonation denial, protected deletion, invite rotation and membership removal, stored failed-attempt count, private bucket. A policy qualification bug caught by these tests was corrected before committing.
+- `git diff --check` and syntax checks.
 
-External image-search result pages belong to Google and require internet; their content and image rights are not controlled by this project. The website never hotlinks those search-result images. User photos and game state stay in the browser. Clearing browser storage removes them.
+Run a repository-only server on `127.0.0.1:8767` for the smoke/cloud-mock tests. The edge-case script starts its own localhost-only server. Python Playwright and Chromium are development tools, not visitor dependencies.
 
-## Deployment
+CI runs `node scripts/verify.mjs` plus the SQL fixture/schema/access tests. Pull requests validate without deploying. Only main deploys after verification.
 
-The initial version is preserved remotely as `original-zip` (08462d6). Pages activation through the available GitHub integration returned HTTP 403, `Resource not accessible by integration`. The repository owner must select **Settings → Pages → Source: GitHub Actions** before the Pages workflow can publish. Consult the Actions run for the actual deployment status; do not treat the expected URL as proof of publication.
+## Remaining live checks
+
+Connect Supabase and complete [backend/README.md](backend/README.md). Verify real email delivery and confirmation/reset, independent accounts and phones, denied anonymous/outsider storage requests, revoked-member requests, and upload/export/delete end to end before using participant photos. No personal photo was uploaded during development.
+
+A physical iPhone Safari was not available. The downloaded WebKit browser requires missing host libraries, so no Safari/WebKit execution is claimed. Device camera selection, HEIC decoding and memory behavior still require a device test. The interface uses native file inputs, 16px controls, safe-area spacing and wall-clock deadlines.

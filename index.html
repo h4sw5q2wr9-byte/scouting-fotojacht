@@ -6,393 +6,432 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#101218" />
+    <meta name="theme-color" content="#151813" />
     <meta
       name="description"
-      content="Meer dan 140 foto-uitdagingen voor Scouting: Nederlandse memes, tv, filmklassiekers en wereldmemes. Gratis en zonder account."
+      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen in een besloten teamalbum."
     />
-    <title>FOTOJACHT — Scouting challenge</title>
-    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'none'"
+    />
+    <title>FOTOJACHT</title>
     <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
-  <!-- Social link previews: absolute HTTPS URLs for messaging crawlers. -->
-<link rel="canonical" href="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="nl_NL">
-<meta property="og:site_name" content="FOTOJACHT">
-<meta property="og:title" content="FOTOJACHT — Eén foto. Jullie versie.">
-<meta property="og:description" content="Kies een bekende foto, verzamel je team en maak hem samen na. De fotochallenge voor Scouting, vol herkenbare memes en legendarische poses.">
-<meta property="og:url" content="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/">
-<meta property="og:image" content="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/assets/og-image.png">
-<meta property="og:image:secure_url" content="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/assets/og-image.png">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="FOTOJACHT: Eén foto. Jullie versie. Met een camera en Scoutingteam in limegroen op een donkere achtergrond.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FOTOJACHT — Eén foto. Jullie versie.">
-<meta name="twitter:description" content="Kies een bekende foto, verzamel je team en maak hem samen na. De fotochallenge voor Scouting.">
-<meta name="twitter:image" content="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/assets/og-image.png">
-<meta name="twitter:image:alt" content="FOTOJACHT: Eén foto. Jullie versie. Camera en Scoutingteam op een donkere achtergrond.">
-</head>
+    <script src="challenges.js" defer></script>
+    <script src="vendor/supabase.js" defer></script>
+    <script src="config.js" defer></script>
+    <script src="app.js" defer></script>
+    <!-- Social link previews: absolute HTTPS URLs for messaging crawlers. -->
+    <link
+      rel="canonical"
+      href="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:site_name" content="FOTOJACHT" />
+    <meta property="og:title" content="FOTOJACHT — Eén foto. Jullie versie." />
+    <meta
+      property="og:description"
+      content="Kies een bekende foto, verzamel je team en maak hem samen na. De fotochallenge voor Scouting, vol herkenbare memes en legendarische poses."
+    />
+    <meta
+      property="og:url"
+      content="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/"
+    />
+    <meta
+      property="og:image"
+      content="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/assets/og-image.png"
+    />
+    <meta
+      property="og:image:secure_url"
+      content="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/assets/og-image.png"
+    />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="FOTOJACHT: Eén foto. Jullie versie. Met een camera en Scoutingteam in limegroen op een donkere achtergrond."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FOTOJACHT — Eén foto. Jullie versie." />
+    <meta
+      name="twitter:description"
+      content="Kies een bekende foto, verzamel je team en maak hem samen na. De fotochallenge voor Scouting."
+    />
+    <meta
+      name="twitter:image"
+      content="https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/assets/og-image.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="FOTOJACHT: Eén foto. Jullie versie. Camera en Scoutingteam op een donkere achtergrond."
+    />
+  </head>
   <body>
-    <header class="topbar">
-      <div class="wrap toprow">
-        <a href="#" class="brand" aria-label="Fotojacht home"
-          ><div class="brandMark">✦</div>
-          FOTO<span>JACHT</span></a
-        >
-        <div class="topbuttons">
-          <button class="btn ghost smh" id="scoreOpen">🏆 Scorebord</button
-          ><button class="btn accent" id="randomTop">🎲 Willekeurig</button>
-        </div>
-      </div>
+    <header class="header">
+      <a class="brand" href="#spelen"
+        ><img src="assets/icon.svg" width="30" height="30" alt="" />FOTOJACHT</a
+      ><button id="accountButton" class="text-button">Inloggen</button>
     </header>
-    <main class="wrap">
-      <section class="hero">
-        <div class="eyebrow">Scouting · Explo’s · Foto's namaken</div>
-        <h1>Hermaak het.<br /><em>Maak het beter.</em></h1>
-        <p>
-          Van <strong>MAND!</strong> tot <strong>Titanic</strong>: kies een
-          legendarische foto, verzamel je team en probeer precies dezelfde scène
-          na te maken. Hoe slechter, hoe grappiger.
-        </p>
-        <div class="hero-actions">
-          <button class="btn accent" id="heroRandom">✦ Verras mijn team</button
-          ><a class="btn ghost" href="#library">Ontdek de opdrachten ↓</a>
+    <main>
+      <section id="playPage" class="page">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">SAMEN NAMAKEN</p>
+            <h1>Eén foto. Jullie versie.</h1>
+          </div>
         </div>
-        <div class="stats">
-          <span class="stat"><b id="totalCount">125</b> uitdagingen</span
-          ><span class="stat">🇳🇱 <b id="nlCount">47</b> Nederlandse</span
-          ><span class="stat">📸 <b id="doneCount">0</b> gemaakt</span
-          ><span class="stat">💛 <b id="favCount">0</b> favorieten</span>
+        <div class="team-bar">
+          <label for="activeTeam">Je speelt voor</label
+          ><select id="activeTeam" aria-label="Actief team">
+            <option value="">Kies een team</option></select
+          ><button id="manageTeams" class="text-button">Teams →</button>
         </div>
-        <div class="hero-art" aria-label="Lokale referentiefoto’s">
-          <img
-            src="assets/references/foto-114.webp"
-            alt="Meisje met de parel, Johannes Vermeer"
-          /><img
-            src="assets/references/foto-128.webp"
-            alt="Buzz Aldrin groet de vlag, NASA"
-          /><span>DEZELFDE POSE.<br />JULLIE EIGEN DRAAI.</span>
+        <article class="challenge">
+          <div class="reference" id="reference"></div>
+          <div class="challenge-body">
+            <div class="title-row">
+              <h2 id="challengeTitle"></h2>
+              <button
+                id="favorite"
+                class="icon-button"
+                aria-label="Bewaar favoriet"
+                aria-pressed="false"
+              >
+                ☆
+              </button>
+            </div>
+            <p id="challengeDescription"></p>
+            <p id="challengeMeta" class="muted"></p>
+            <p id="referenceCredit" class="credit"></p>
+          </div>
+        </article>
+        <div class="play-tools">
+          <button id="browse" class="secondary">Kies een andere foto</button
+          ><button id="random" class="secondary">Verras me ↗</button>
         </div>
-      </section>
-      <div class="how">
-        <span><b>01</b> Kies een icoon</span
-        ><span><b>02</b> Maak de foto na</span
-        ><span><b>03</b> Steel de show</span>
-      </div>
-      <section class="starters" aria-label="Meteen beginnen">
-        <div class="sectionline">
-          <h2>Begin met een beeld</h2>
-          <a class="subtlelink smtext" href="#library">Alle opdrachten ↓</a>
-        </div>
-        <div class="starter-grid">
-          <button data-open="foto-114">
-            <img
-              src="assets/references/foto-114.webp"
-              alt="Meisje met de parel"
-              loading="lazy"
-            /><span>De blik van Vermeer <b>1 persoon →</b></span></button
-          ><button data-open="foto-128">
-            <img
-              src="assets/references/foto-128.webp"
-              alt="Buzz Aldrin groet de vlag"
-              loading="lazy"
-            /><span>Een kleine stap <b>1 persoon →</b></span></button
-          ><button data-open="foto-127">
-            <img
-              src="assets/references/foto-127.webp"
-              alt="De Nachtwacht"
-              loading="lazy"
-            /><span>Jullie Nachtwacht <b>5+ personen →</b></span>
+        <div class="round-bar">
+          <label for="duration" class="sr-only">Rondetijd</label
+          ><select id="duration">
+            <option value="180">3 min</option>
+            <option value="300">5 min</option>
+            <option value="600">10 min</option>
+            <option value="900">15 min</option></select
+          ><output id="clock" aria-label="Resterende tijd">05:00</output
+          ><button id="timerToggle" class="text-button">Start timer</button
+          ><button
+            id="timerReset"
+            class="icon-button"
+            aria-label="Timer resetten"
+          >
+            ↺
           </button>
         </div>
-      </section>
-      <section id="library" class="tools" aria-label="Zoeken en filteren">
-        <div class="searchline">
-          <label class="search"
-            >🔎
-            <input
-              id="search"
-              type="search"
-              placeholder="Zoek een film, meme, tv-programma..."
-              autocomplete="off"
-              aria-label="Zoek foto's" /></label
-          ><button class="btn accent" id="random">🎲 Kies er één</button
-          ><button class="btn mobile-only" id="scoreMobile">🏆 Scores</button>
+        <button id="takePhoto" class="primary wide">
+          ＋ Maak of kies jullie foto
+        </button>
+        <p id="saveHint" class="hint">
+          Log in en kies een team om foto’s privé te delen.
+        </p>
+        <div class="next-row">
+          <button id="previous" class="text-button">← Vorige</button
+          ><button id="skip" class="text-button">Sla over →</button>
         </div>
-        <div class="filterline" id="categories"></div>
-        <div class="subfilters">
-          <div class="filterline">
-            <button class="chip selected" data-difficulty="Alle" id="allDiff">
-              Alle niveaus</button
-            ><button class="chip" data-difficulty="Makkelijk">Makkelijk</button
-            ><button class="chip" data-difficulty="Gemiddeld">Gemiddeld</button
-            ><button class="chip" data-difficulty="Moeilijk">Moeilijk</button
-            ><button class="chip" id="favFilter">★ Favorieten</button
-            ><button class="chip" id="localFilter">▣ Met lokale foto</button
-            ><button class="chip" id="hideDone">✓ Verberg gedaan</button>
+        <button id="finish" class="secondary wide">
+          Klaar? Bekijk jullie fotoalbum →
+        </button>
+        <details class="quiet-details">
+          <summary>Een eigen voorbeeld gebruiken</summary>
+          <p>
+            Voor filmbeelden zonder meegeleverde foto kun je een toegestaan
+            eigen voorbeeld kiezen. Dit voorbeeld blijft alleen op deze
+            telefoon.
+          </p>
+          <button id="customReference" class="secondary">Kies voorbeeld</button
+          ><button id="removeReference" class="text-button" hidden>
+            Verwijder eigen voorbeeld
+          </button>
+        </details>
+      </section>
+      <section id="albumPage" class="page" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">JULLIE HERINNERINGEN</p>
+            <h1>Het fotoalbum.</h1>
           </div>
-          <span class="smtext muted" id="countLabel">Laden…</span>
+          <button id="refreshAlbum" class="text-button">Vernieuw ↻</button>
         </div>
+        <label class="sr-only" for="albumTeam">Filter op team</label
+        ><select id="albumTeam" class="wide">
+          <option value="">Alle mijn teams</option>
+        </select>
+        <p class="hint">
+          Alleen leden van een team kunnen dat teamalbum openen. Je ziet hier je
+          eigen teams.
+        </p>
+        <div id="albumContent"></div>
+        <div id="legacySection" hidden>
+          <h2>Eerdere foto’s op deze telefoon</h2>
+          <p class="hint">
+            Deze oude foto’s zijn nog niet gedeeld of aan een team gekoppeld.
+            Download ze om ze te bewaren.
+          </p>
+          <div id="legacyGrid" class="gallery-grid"></div>
+        </div>
+        <details class="quiet-details">
+          <summary>Waar worden foto’s bewaard?</summary>
+          <p>
+            Nieuwe teamfoto’s gaan naar een privéopslag met inloggen en
+            toegangsregels. Ze komen nooit in de openbare GitHub-repository.
+            Teamleden kunnen beelden bekijken en downloaden; deel uitnodigingen
+            dus alleen met je groep.
+          </p>
+          <p>
+            Cookies slaan geen foto’s op. De website onthoudt je voorkeuren op
+            dit apparaat; je aanmelding blijft alleen in deze browsersessie
+            bewaard. Gedownloade foto’s en albums bewaar je zelf.
+          </p>
+        </details>
       </section>
-      <section>
-        <div class="sectionline">
-          <h2>🎞️ Kies je opdracht</h2>
-          <div class="muted smtext">Tik op een kaart voor het voorbeeld</div>
+      <section id="teamsPage" class="page" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">SAMEN SPELEN</p>
+            <h1>Jullie teams.</h1>
+          </div>
         </div>
-        <div id="cards" class="cards" aria-live="polite"></div>
+        <div id="connectionNotice" class="notice" hidden>
+          <h2>Privé delen wordt klaargezet</h2>
+          <p>
+            Rondkijken en spelen kan al. Inloggen en foto’s delen komen
+            beschikbaar zodra de privéopslag is aangesloten. Foto’s uploaden
+            staat tot die tijd uit.
+          </p>
+        </div>
+        <section id="authPanel" class="panel" hidden>
+          <h2>Log in voor je teamalbum</h2>
+          <p>Gebruik je eigen account. Deel geen wachtwoorden.</p>
+          <form id="authForm">
+            <label for="email">E-mailadres</label
+            ><input
+              id="email"
+              type="email"
+              autocomplete="email"
+              required
+              maxlength="254"
+            /><label for="password">Wachtwoord</label
+            ><input
+              id="password"
+              type="password"
+              autocomplete="current-password"
+              minlength="8"
+              required
+            /><button type="submit" class="primary wide" id="signIn">
+              Inloggen
+            </button>
+            <div class="split">
+              <button type="button" id="signUp" class="text-button">
+                Nieuw account maken</button
+              ><button type="button" id="resetPassword" class="text-button">
+                Wachtwoord vergeten
+              </button>
+            </div>
+            <p id="authMessage" role="status" class="hint"></p>
+          </form>
+        </section>
+        <section id="signedInPanel" hidden>
+          <p class="account-line">
+            <span id="accountEmail"></span
+            ><button id="signOut" class="text-button">Uitloggen</button>
+          </p>
+          <div id="teamList"></div>
+          <div class="panel">
+            <h2>Maak een team</h2>
+            <form id="createTeamForm">
+              <label class="sr-only" for="teamName">Teamnaam</label>
+              <div class="input-row">
+                <input
+                  id="teamName"
+                  maxlength="40"
+                  placeholder="Bijvoorbeeld: De Vossen"
+                  required
+                /><button class="primary" type="submit">Maak team</button>
+              </div>
+            </form>
+          </div>
+          <div class="panel">
+            <h2>Doe mee met een team</h2>
+            <form id="joinTeamForm">
+              <label for="inviteCode">Uitnodigingscode van je teamleider</label
+              ><input
+                id="inviteCode"
+                type="text"
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+                required
+                maxlength="48"
+              /><button class="secondary wide" type="submit">Word lid</button>
+            </form>
+          </div>
+        </section>
       </section>
     </main>
-    <footer class="footer">
-      <div class="wrap">
-        <strong>FOTOJACHT</strong> · Gemaakt voor Scouting. Foto's en merknamen
-        behoren toe aan hun rechthebbenden. Lokale referenties hebben een
-        bronvermelding. Voor beschermde scènes opent ‘Zoek origineel’ een
-        externe afbeeldingenzoeker. Toegevoegde foto's en scores blijven op dit
-        apparaat. <a href="README.md" class="subtlelink">Uitleg</a>.
+    <nav class="bottom-nav" aria-label="Hoofdnavigatie">
+      <a href="#spelen" data-page="spelen" aria-current="page"
+        ><span aria-hidden="true">▣</span>Spelen</a
+      ><a href="#album" data-page="album"
+        ><span aria-hidden="true">▦</span>Fotoalbum</a
+      ><a href="#teams" data-page="teams"
+        ><span aria-hidden="true">♧</span>Teams</a
+      >
+    </nav>
+    <dialog id="browseDialog">
+      <div class="dialog-header">
+        <h2>Kies een foto</h2>
+        <button
+          class="icon-button"
+          data-close="browseDialog"
+          aria-label="Sluiten"
+        >
+          ✕
+        </button>
       </div>
-    </footer>
-    <div
-      id="detailOverlay"
-      class="overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Foto challenge"
-      aria-hidden="true"
-    >
-      <div class="modal">
-        <div class="modalheader">
-          <div>
-            <div class="kind" id="modalCategory"></div>
-            <h2 id="modalTitle"></h2>
-          </div>
-          <button class="btn iconbtn" id="closeDetail" aria-label="Sluiten">
-            ✕
+      <div class="dialog-body">
+        <input
+          type="search"
+          id="search"
+          placeholder="Zoek een opdracht…"
+          aria-label="Zoek een opdracht"
+        />
+        <div class="browse-filters">
+          <label class="sr-only" for="category">Categorie</label
+          ><select id="category">
+            <option value="">Alle categorieën</option>
+            <option>Nederlandse memes</option>
+            <option>Nederlandse tv &amp; film</option>
+            <option>Memes wereldwijd</option>
+            <option>Films &amp; series</option>
+            <option>Iconische foto’s</option></select
+          ><label
+            ><input type="checkbox" id="showAll" /> Ook opdrachten met
+            zoeklink</label
+          ><label
+            ><input type="checkbox" id="favoritesOnly" /> Alleen
+            favorieten</label
+          >
+        </div>
+        <p id="browseCount" class="hint"></p>
+        <div id="browseGrid" class="browse-grid"></div>
+      </div>
+    </dialog>
+    <dialog id="uploadDialog">
+      <div class="dialog-header">
+        <h2>Bewaar jullie foto</h2>
+        <button
+          class="icon-button"
+          data-close="uploadDialog"
+          aria-label="Sluiten"
+        >
+          ✕
+        </button>
+      </div>
+      <div class="dialog-body">
+        <img id="uploadPreview" class="preview" alt="Jullie gekozen foto" />
+        <p id="uploadCaption"></p>
+        <p class="hint">
+          Alleen leden van dit team krijgen toegang. Locatiegegevens worden uit
+          het opgeslagen bestand verwijderd.
+        </p>
+        <label for="photoPoints">Punten voor deze foto</label
+        ><select id="photoPoints">
+          <option value="0">0 punten</option>
+          <option value="1">1 punt</option>
+          <option value="2">2 punten</option>
+          <option value="3">3 punten</option>
+          <option value="4">4 punten</option>
+          <option value="5" selected>5 punten</option>
+          <option value="6">6 punten</option>
+          <option value="7">7 punten</option>
+          <option value="8">8 punten</option>
+          <option value="9">9 punten</option>
+          <option value="10">10 punten</option></select
+        ><button id="savePhoto" class="primary wide">
+          Bewaar privé in het teamalbum
+        </button>
+        <p id="uploadMessage" class="hint" role="status"></p>
+      </div>
+    </dialog>
+    <dialog id="photoDialog">
+      <div class="dialog-header">
+        <h2 id="photoTitle">Foto</h2>
+        <button
+          class="icon-button"
+          data-close="photoDialog"
+          aria-label="Sluiten"
+        >
+          ✕
+        </button>
+      </div>
+      <div class="dialog-body">
+        <div id="photoView"></div>
+        <div class="split">
+          <button id="downloadPhoto" class="secondary">Download foto</button
+          ><button id="deletePhoto" class="text-button danger">
+            Verwijder
           </button>
         </div>
-        <div class="modalcontent">
-          <div>
-            <div class="compare">
-              <figure>
-                <figcaption>
-                  HET ORIGINEEL
-                  <button class="btn sm" id="expandReference">
-                    ⛶ Vergroot
-                  </button>
-                </figcaption>
-                <div class="reference" id="reference">
-                  <div class="refplaceholder">Afbeelding laden…</div>
-                </div>
-              </figure>
-              <figure>
-                <figcaption>JULLIE VERSIE</figcaption>
-                <div class="reference recreation" id="recreation">
-                  <p>
-                    Jullie moment komt hier.<br />Maak de pose na en voeg je
-                    foto toe.
-                  </p>
-                </div>
-                <button class="btn" id="uploadRecreation">
-                  📷 Maak of kies een foto</button
-                ><button class="btn sm ghost hidden" id="deleteRecreation">
-                  Verwijder foto</button
-                ><input
-                  type="file"
-                  id="recreationPicker"
-                  accept="image/*"
-                  class="hidden"
-                />
-              </figure>
-            </div>
-            <p id="referenceCredit" class="smallnote"></p>
-            <div class="actiongroup" style="margin-top: 10px">
-              <button class="btn" id="prev">← Vorige</button
-              ><button class="btn" id="next">Volgende →</button
-              ><button class="btn accent" id="randomModal">🎲 Random</button>
-            </div>
-          </div>
-          <div class="details">
-            <div class="info">
-              <h3>📸 Hoe maak je deze na?</h3>
-              <p id="modalDesc"></p>
-              <div class="meta" style="margin-top: 10px">
-                <span id="modalPeople"></span><span id="modalDifficulty"></span>
-              </div>
-            </div>
-            <div>
-              <h3>🖼️ Voorbeeldfoto</h3>
-              <div class="actiongroup">
-                <a
-                  class="btn accent"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  id="searchOriginal"
-                  >🔍 Zoek origineel ↗</a
-                ><button class="btn" id="customImage">＋ Eigen voorbeeld</button
-                ><input
-                  id="imagePicker"
-                  type="file"
-                  accept="image/*"
-                  class="hidden"
-                />
-              </div>
-              <p class="smallnote">
-                Zoek het precieze filmbeeld en gebruik eventueel een screenshot
-                via ‘Eigen voorbeeld’. Wordt alleen op jouw apparaat opgeslagen.
-                Gebruik een afbeelding die je mag gebruiken.
-              </p>
-              <button class="btn ghost sm hidden" id="removeCustom">
-                Eigen afbeelding verwijderen
-              </button>
-            </div>
-            <div class="info">
-              <h3>⏱ Jullie ronde</h3>
-              <div class="round-clock" id="roundClock">05:00</div>
-              <div class="round-tools">
-                <button class="btn" id="roundDuration">5 min</button
-                ><button class="btn" id="roundPause">▶ Hervat</button
-                ><button
-                  class="btn"
-                  id="roundReset"
-                  aria-label="Rondetimer resetten"
-                >
-                  ↺
-                </button>
-              </div>
-              <p class="smallnote">
-                Kies je rondetijd. Start als iedereen klaarstaat.
-              </p>
-              <div class="actiongroup">
-                <button class="btn accent" id="startRound">
-                  ▶ Start ronde</button
-                ><button class="btn" id="skipRound">Sla over →</button>
-              </div>
-            </div>
-            <div class="info">
-              <h3>🏆 Geef punten</h3>
-              <label
-                >Team
-                <select id="awardTeam">
-                  <option value="a">Team Geel</option>
-                  <option value="b">Team Blauw</option>
-                </select></label
-              ><label
-                >Punten (0–10)
-                <input
-                  id="awardPoints"
-                  type="number"
-                  min="0"
-                  max="10"
-                  value="5"
-                  inputmode="numeric" /></label
-              ><button class="btn accent" id="award">
-                Ken punten toe & rond af
-              </button>
-              <p id="awardStatus" class="smallnote"></p>
-            </div>
-            <div class="info">
-              <h3>✅ Opdracht voltooid?</h3>
-              <button class="btn accent" style="width: 100%" id="doneButton">
-                Markeer als gedaan
-              </button>
-            </div>
-            <button class="btn" id="modalFav">☆ Zet bij favorieten</button>
-          </div>
-        </div>
       </div>
-    </div>
-    <div
-      id="scoreOverlay"
-      class="overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-hidden="true"
-      aria-label="Scorebord"
-    >
-      <div class="modal" style="max-width: 530px">
-        <div class="modalheader">
-          <div>
-            <div class="kind">Challenge mode</div>
-            <h2>🏆 Scorebord</h2>
-          </div>
-          <button class="btn iconbtn" id="closeScore" aria-label="Sluiten">
-            ✕
-          </button>
-        </div>
-        <div style="padding: 17px; overflow: auto">
-          <p class="muted" style="margin: 0 0 12px; font-size: 12px">
-            Beoordeel elke foto op herkenbaarheid, creativiteit en hoe goed de
-            pose gelukt is (max. 10 punten).
-          </p>
-          <div class="scoreboard">
-            <div class="team">
-              <input
-                type="text"
-                id="teamAName"
-                aria-label="Naam team A"
-                maxlength="22"
-              /><span id="teamAScore">0</span>
-              <div class="scorecontrols">
-                <button class="btn sm" data-team="a" data-delta="-1">−1</button
-                ><button class="btn sm accent" data-team="a" data-delta="1">
-                  +1</button
-                ><button class="btn sm accent" data-team="a" data-delta="5">
-                  +5
-                </button>
-              </div>
-            </div>
-            <div class="team">
-              <input
-                type="text"
-                id="teamBName"
-                aria-label="Naam team B"
-                maxlength="22"
-              /><span id="teamBScore">0</span>
-              <div class="scorecontrols">
-                <button class="btn sm" data-team="b" data-delta="-1">−1</button
-                ><button class="btn sm accent" data-team="b" data-delta="1">
-                  +1</button
-                ><button class="btn sm accent" data-team="b" data-delta="5">
-                  +5
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="actiongroup" style="margin-top: 15px">
-            <button id="resetScore" class="btn">Scores resetten</button
-            ><button id="clearProgress" class="btn">
-              Gedaan-markeringen wissen
-            </button>
-          </div>
-          <p class="smallnote" style="margin-top: 14px">
-            Geen accounts of server: dit scorebord is alleen op jouw telefoon
-            zichtbaar.
-          </p>
-        </div>
+    </dialog>
+    <dialog id="inviteDialog">
+      <div class="dialog-header">
+        <h2 id="inviteTitle">Team uitnodigen</h2>
+        <button
+          class="icon-button"
+          data-close="inviteDialog"
+          aria-label="Sluiten"
+        >
+          ✕
+        </button>
       </div>
-    </div>
-    <div class="panel" aria-label="Afteltimer">
-      <span class="clock" id="clock" aria-live="off">05:00</span
-      ><button class="btn" id="toggleTimer" aria-label="Timer starten">
-        ▶</button
-      ><button class="btn" id="timerReset">↺</button
-      ><button class="btn" id="timerDuration">5 min</button>
-    </div>
-    <div
-      id="viewer"
-      class="overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Vergrote referentie"
-      aria-hidden="true"
-    >
-      <button id="closeViewer" class="btn">✕ Sluiten</button>
-      <div id="viewerContent"></div>
-    </div>
-    <div id="toast" class="toast" role="status"></div>
-    <script src="challenges.js"></script>
-    <script src="app.js"></script>
+      <div class="dialog-body">
+        <p>
+          Laat teamgenoten inloggen en deze code invullen bij Teams. De code is
+          24 uur geldig.
+        </p>
+        <output id="generatedCode" class="invite-code"></output
+        ><button id="copyInvite" class="secondary wide">Kopieer code</button>
+        <p class="hint">
+          Iedereen met deze code kan na inloggen lid worden. Een nieuwe code
+          maakt de vorige ongeldig.
+        </p>
+        <button id="rotateInvite" class="text-button">
+          Maak een nieuwe code
+        </button>
+        <h3>Teamleden</h3>
+        <div id="memberList"></div>
+      </div>
+    </dialog>
+    <dialog id="recoveryDialog">
+      <div class="dialog-header"><h2>Nieuw wachtwoord</h2></div>
+      <form id="recoveryForm" class="dialog-body">
+        <label for="newPassword">Minimaal 8 tekens</label
+        ><input
+          type="password"
+          id="newPassword"
+          autocomplete="new-password"
+          minlength="8"
+          required
+        /><button type="submit" class="primary wide">Bewaar wachtwoord</button>
+      </form>
+    </dialog>
+    <input type="file" id="photoPicker" accept="image/*" hidden />
+    <input type="file" id="referencePicker" accept="image/*" hidden />
+    <div id="toast" role="status" hidden></div>
+    <noscript><p>Schakel JavaScript in om FOTOJACHT te gebruiken.</p></noscript>
   </body>
 </html>

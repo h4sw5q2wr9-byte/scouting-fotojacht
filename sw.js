@@ -1,13 +1,19 @@
-const NAME = "fotojacht-v3.0.0";
+const NAME = "fotojacht-simple-v4.0.0";
+// Strict allowlist: no auth requests, storage downloads, personal photos or blobs.
 const CORE = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./challenges.js",
+  "./config.js",
+  "./vendor/supabase.js",
   "./manifest.webmanifest",
   "./assets/icon.svg",
 ];
+const PUBLIC_PATHS = new Set(
+  CORE.map((path) => new URL(path, self.location.href).pathname),
+);
 self.addEventListener("install", (event) =>
   event.waitUntil(
     caches
@@ -23,8 +29,8 @@ self.addEventListener("activate", (event) =>
       .then((keys) =>
         Promise.all(
           keys
-            .filter((k) => k.startsWith("fotojacht-") && k !== NAME)
-            .map((k) => caches.delete(k)),
+            .filter((key) => key.startsWith("fotojacht-") && key !== NAME)
+            .map((key) => caches.delete(key)),
         ),
       )
       .then(() => self.clients.claim()),
@@ -32,7 +38,19 @@ self.addEventListener("activate", (event) =>
 );
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
-  if (event.request.method !== "GET" || url.origin !== self.location.origin)
+  if (
+    event.request.method !== "GET" ||
+    url.origin !== self.location.origin ||
+    url.search ||
+    event.request.headers.has("authorization")
+  )
+    return;
+  if (
+    !PUBLIC_PATHS.has(url.pathname) &&
+    !url.pathname.startsWith(
+      new URL("./assets/references/", self.location.href).pathname,
+    )
+  )
     return;
   event.respondWith(
     fetch(event.request)

@@ -40,6 +40,9 @@ for (const path of [
   "sw.js",
   "manifest.webmanifest",
   "assets/icon.svg",
+  "assets/og-image.png",
+  "config.js",
+  "vendor/supabase.js",
 ])
   assert(fs.existsSync(path));
 new vm.Script(fs.readFileSync("app.js", "utf8"));
@@ -47,3 +50,36 @@ new vm.Script(fs.readFileSync("sw.js", "utf8"));
 console.log(
   `PASS: ${data.length} unique challenges; all 125 original IDs; ${sources.length} local references; valid scripts and assets.`,
 );
+
+const png = fs.readFileSync("assets/og-image.png");
+assert.equal(png.readUInt32BE(16), 1200);
+assert.equal(png.readUInt32BE(20), 630);
+assert(html.includes('property="og:image"'));
+assert(html.includes('name="twitter:card"'));
+assert(
+  html.includes(
+    "https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/assets/og-image.png",
+  ),
+);
+new vm.Script(fs.readFileSync("config.js", "utf8"));
+assert(!fs.readFileSync("config.js", "utf8").includes("sb_secret_"));
+console.log("PASS: exact 1200×630 social image and OG/Twitter metadata.");
+
+const cfg = { window: {} };
+vm.runInNewContext(fs.readFileSync("config.js", "utf8"), cfg);
+const { url, publishableKey: key } = cfg.window.FOTOJACHT_CONFIG;
+if (key) {
+  let isPublic = /^sb_publishable_[A-Za-z0-9_-]+$/.test(key);
+  try {
+    isPublic ||=
+      JSON.parse(Buffer.from(key.split(".")[1], "base64url")).role === "anon";
+  } catch {}
+  assert(
+    isPublic,
+    "Only an anon/publishable key may be committed. Never a service_role/secret key.",
+  );
+  assert(
+    /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url),
+    "Invalid backend URL",
+  );
+}
