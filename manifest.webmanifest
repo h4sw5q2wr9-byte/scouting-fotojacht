@@ -1,7 +1,7 @@
 {
   "name": "FOTOJACHT V2 — Maak het na",
   "short_name": "FOTOJACHT",
-  "description": "Een groep, 25 echte referentiefoto’s, jullie eigen versie.",
+  "description": "Grappige foto-opdrachten voor 1–4 personen. Meestal samen, altijd lokaal bewaard.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

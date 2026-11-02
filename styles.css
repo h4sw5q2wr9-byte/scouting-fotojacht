@@ -745,3 +745,27 @@ dialog::backdrop {
   padding-top: 16px;
   padding-bottom: 16px;
 }
+.player-filter {
+  margin: 0 0 16px;
+}
+.player-filter label {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0 0 7px;
+}
+.player-filter select {
+  font: inherit;
+  font-size: 16px;
+  min-height: 46px;
+  width: 100%;
+  padding: 9px 12px;
+  color: var(--paper);
+  background: #25252f;
+  border: 1px solid #41414e;
+  border-radius: 9px;
+  touch-action: manipulation;
+}
+.player-filter select:focus-visible {
+  outline: 3px solid var(--pink);
+  outline-offset: 3px;
+}

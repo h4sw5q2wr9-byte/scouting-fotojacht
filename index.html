@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#101014" />
     <meta
       name="description"
-      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen op je eigen telefoon. 25 echte foto’s, direct in de site."
+      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen op je eigen telefoon. Grappige lokale foto’s voor 1–4 personen."
     />
     <meta name="referrer" content="no-referrer" />
     <meta
@@ -87,11 +87,11 @@
         <div class="intro">
           <p class="eyebrow">DE SCOUTING FOTOCHALLENGE</p>
           <h1>MAAK <em>’M NA.</em></h1>
-          <p>25 echte foto’s. Eén groep. Jullie versie.</p>
+          <p>Grappige poses. Met z’n tweeën, drieën of vieren.</p>
         </div>
         <div class="deck-toolbar">
           <button id="browse" class="secondary">
-            ▦ Alle <span id="deckCount">25</span> kaarten</button
+            ▦ Alle <span id="deckCount">21</span> kaarten</button
           ><button id="random" class="text-button">Verras ons ↗</button>
         </div>
         <article id="challenge" class="challenge">
@@ -182,7 +182,7 @@
       </section>
       <footer>
         <span>Één groep. Eén telefoon. Heel veel slechte poses.</span
-        ><a href="credits.html">Fotocredits</a><span class="release">V2.0</span>
+        ><a href="credits.html">Fotocredits</a><span class="release">V2.1</span>
       </footer>
     </main>
     <nav class="bottom-nav" aria-label="Navigatie">
@@ -251,6 +251,17 @@
         </button>
       </div>
       <div class="dialog-body">
+        <div class="player-filter">
+          <label for="playerFilter">Hoeveel mensen op de foto?</label
+          ><select id="playerFilter">
+            <option value="group">Groepsopdrachten (2–4)</option>
+            <option value="2">Met z’n tweeën</option>
+            <option value="3">Met z’n drieën</option>
+            <option value="4">Met z’n vieren</option>
+            <option value="all">Alles (1–4 personen)</option>
+            <option value="1">Solo-reacties</option>
+          </select>
+        </div>
         <div id="categories" class="category-filters"></div>
         <div id="pickerGrid" class="picker-grid"></div>
       </div>

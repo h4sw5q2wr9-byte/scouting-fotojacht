@@ -2,12 +2,12 @@
 
 **Live:** https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/
 
-Eén groep per telefoon. **25 echte, lokaal ingebouwde referentiefoto’s**: Nederlandse popcultuur, memes, filmpubliciteitsfoto’s, muziek en iconische fotografie. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
+Eén groep per telefoon. **21 echte, lokaal ingebouwde referentiefoto’s**: Grappige interacties, komische scènes en overdreven reacties. **19 kaarten voor 2–4 personen**, plus 2 optionele solo-reacties. Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
 
 ## Vanavond gebruiken
 
 1. Open de site en lees de vier korte stappen. De **?** rechtsboven opent de uitleg opnieuw.
-2. Kies **Alle 25 kaarten** of **Verras ons**. Het origineel staat groot in de site; tik om te vergroten.
+2. Kies **Alle 21 kaarten** of **Verras ons**. De kiezer begint met groepskaarten (2–4). Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
 3. Kies **Maak jullie versie**, maak of kies een foto en tik **Bewaar & vergelijk**.
 4. Bekijk beide foto’s naast elkaar en ga door naar de volgende kaart. Er blijft **één foto per opdracht** bewaard; een nieuwe versie vervangt de vorige na bevestiging.
 5. Tik onderaan op **Jullie foto’s**, daarna op de grote knop **Download ZIP**.
@@ -27,7 +27,7 @@ Foto’s blijven in **IndexedDB op deze telefoon**. Er zijn geen accounts, uploa
 
 Gebruik geen privémodus. Browsergegevens wissen of opslagopruiming kan foto’s verwijderen: **download de ZIP aan het eind**. Iedere telefoon exporteert zijn eigen foto’s. Een optionele groepsnaam verandert alleen de naam/titel van de export; er is geen multi-teammodus.
 
-Eerder bewaarde foto’s blijven apart beschikbaar onder **Eerder opgeslagen foto’s** in het album. De oude 145 opdrachttitels blijven in `archive/challenges-v1.json` voor die oude exports; ze zijn niet speelbaar in de nieuwe fotodeck. Ook oude v1-IndexedDB-foto’s worden behouden.
+Eerder bewaarde foto’s blijven apart beschikbaar onder **Eerder opgeslagen foto’s** in het album. Oude opdrachttitels en credits, inclusief de vorige 25 kaarten, blijven in `archive/challenges-v1.json` voor die oude exports; ze zijn niet speelbaar in de nieuwe fotodeck. Ook oude v1-IndexedDB-foto’s worden behouden.
 
 Nieuwe foto’s worden maximaal 1800px als JPEG opgeslagen, zonder de oorspronkelijke EXIF/GPS-metadata. De ingebouwde referentie wordt bij de foto bewaard voor een stabiele vergelijking. Downloaden of delen doe je zelf met toestemming van deelnemers.
 
@@ -37,7 +37,7 @@ Het aangeleverde `FOTOJACHT_V2_Codex_Pack.zip` is gelezen en gebruikt. Het bevat
 
 `assets/references/sources.json` gebruikt het V2-formaat `{version, items}`. Elk speelbaar item heeft een lokale JPEG, maker, image-level licentie, bronpagina, bewerkingsnotitie, `status: ready`, categorie, moeilijkheid en spelersaantal. `challenges.js` stelt dezelfde entries beschikbaar als `FOTOJACHT_LOCAL_REFERENCES`.
 
-De referenties zijn echte foto’s/publiciteitsbeelden uit herbruikbare Commons-bronnen, geen AI-vervangingen. Het gaat onder meer om Joost/Europapa, Snollebollekes, Duncan, S10, Max & Lewis, Grumpy Cat, Rick Astley, ‘not impressed’, Chaplin, Marilyn, Audrey en Bolt. Een scène zonder toegestane lokale foto is bewust niet opgenomen. Verre podiumbeelden zijn vervangen door duidelijkere foto's. Fotocredits staan lokaal op `credits.html`; bronlinks daar zijn alleen voor attributie en niet nodig om te spelen. Licenties van originelen gelden voor die originelen, niet automatisch voor jullie eigen foto’s.
+De referenties zijn echte foto’s/publiciteitsbeelden uit herbruikbare Commons-bronnen, geen AI-vervangingen. Het gaat onder meer om een fusion dance, de spionnenpose, drie wijze apen, de mysterieuze bol, ‘not impressed’, twee chauffeurs met allebei een stuur, een snackdief onder tafel, een ingestorte taart, vier gestapelde hoofden, Samson, dubbele Bassies en een ongemakkelijke handdruk. Twee sterke solo-reacties zijn Grumpy Cat en de mic drop. Sommige referenties zijn echte party-/cosplayfoto’s van een bekende pose, niet het oorspronkelijke studiofilmbeeld. Een scène zonder toegestane lokale foto is bewust niet opgenomen. Verre podiumbeelden zijn vervangen door duidelijkere foto's. Fotocredits staan lokaal op `credits.html`; bronlinks daar zijn alleen voor attributie en niet nodig om te spelen. Licenties van originelen gelden voor die originelen, niet automatisch voor jullie eigen foto’s.
 
 ## Ontwikkeling en deploy
 
@@ -50,3 +50,9 @@ python3 scripts/browser-smoke.py
 Geen build of backend. De MIT-library fflate v0.8.2 maakt ZIP's in de browser. De service worker bewaart de openbare app en volledige kleine fotodeck voor offline gebruik na de eerste volledige installatie; persoonlijke foto’s gaan uitsluitend naar IndexedDB, niet naar Cache Storage.
 
 Elke werkende push naar **main** wordt direct via GitHub Pages gepubliceerd. Social previews zijn behouden. Startpunt van deze rebuild: tag **before-v2-deck-2026-11-02**, commit `77b962c`. Oudere herstelpunten: `original-zip` en `before-simple-teams-2026-11-02`.
+
+## Update: teams en humor
+
+De deck is bewust teruggebracht naar 21 kaarten. Negentien zijn voor 2–4 personen; twee optionele solo-reacties staan in het spelersfilter apart. Een foto moest een grappige interactie of uitgesproken pose bevatten. Normale portretten, poses met meer dan vier hoofdrollen, een beeld van zandsculpturen en een architectuurfoto die als perspectiefgrap werd gevonden zijn na visuele controle verworpen. De Cha Cha Cha-foto is onder dezelfde CC BY-SA-licentie uitgesneden op drie zichtbare dansers.
+
+Herstelpunt vóór deze inhoudswijziging: `before-funny-teams-deck-2026-11-02` (`ac85182`). Bestaande foto’s blijven in het eerdere album staan met hun oorspronkelijke titels en credits.

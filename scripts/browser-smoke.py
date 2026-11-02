@@ -12,20 +12,28 @@ with sync_playwright() as p:
  assert page.locator('[id*="timer"],[id*="team"],a[href*="google"]').count()==0
  assert page.locator('#reference').evaluate('(e)=>e.complete&&e.naturalWidth>0')
  # All references are actual decoded local images, not just existing path strings.
- count=page.evaluate('''async()=>{const items=window.FOTOJACHT_LOCAL_REFERENCES;for(const item of items){const image=new Image();image.src=item.image;await image.decode();if(image.naturalWidth<300)throw Error(item.title);}return items.length}''');assert count==25
+ count=page.evaluate('''async()=>{const items=window.FOTOJACHT_LOCAL_REFERENCES;for(const item of items){const image=new Image();image.src=item.image;await image.decode();if(image.naturalWidth<300)throw Error(item.title);}return items.length}''');assert count==21
  for width in [320,375,390,768,1440]:
   page.set_viewport_size({'width':width,'height':844});assert page.evaluate('document.documentElement.scrollWidth')==width
  page.set_viewport_size({'width':390,'height':844});page.screenshot(path='/tmp/fotojacht-v2-deck.png')
  first=page.locator('#challengeTitle').text_content()
  def choose_and_save(path):
   page.locator('#takePhoto').click();page.locator('#photoPicker').set_input_files(path);expect(page.locator('#uploadDialog')).to_be_visible();page.locator('#savePhoto').click();expect(page.locator('#viewerDialog')).to_be_visible();expect(page.locator('#comparison img')).to_have_count(2)
- choose_and_save(ROOT/'assets/references/snollebollekes.jpg');page.locator('[data-close="viewerDialog"]').click();expect(page.locator('#albumBadge')).to_have_text('1')
+ choose_and_save(ROOT/'assets/references/de-mislukte-fusion-dance.jpg');page.locator('[data-close="viewerDialog"]').click();expect(page.locator('#albumBadge')).to_have_text('1')
  # Replacing the same challenge must not create an extra submission.
- choose_and_save(ROOT/'assets/references/billie-eilish.jpg');page.locator('[data-close="viewerDialog"]').click();expect(page.locator('#albumBadge')).to_have_text('1')
+ choose_and_save(ROOT/'assets/references/grumpy-cat.jpg');page.locator('[data-close="viewerDialog"]').click();expect(page.locator('#albumBadge')).to_have_text('1')
  page.reload();expect(page.locator('#tutorialDialog')).not_to_be_visible();expect(page.locator('#albumBadge')).to_have_text('1');expect(page.locator('#doneBadge')).to_be_visible()
  page.locator('#next').click();second=page.locator('#challengeTitle').text_content();assert second!=first
- choose_and_save(ROOT/'assets/references/snollebollekes.jpg');page.locator('#continuePlaying').click();expect(page.locator('#viewerDialog')).not_to_be_visible();expect(page.locator('#albumBadge')).to_have_text('2')
- page.locator('#browse').click();expect(page.locator('.picker-card')).to_have_count(25);page.locator('[data-category="Memes"]').click();assert page.locator('.picker-card').count()>=4;page.locator('.picker-card').first.click();expect(page.locator('#pickerDialog')).not_to_be_visible()
+ choose_and_save(ROOT/'assets/references/de-mislukte-fusion-dance.jpg');page.locator('#continuePlaying').click();expect(page.locator('#viewerDialog')).not_to_be_visible();expect(page.locator('#albumBadge')).to_have_text('2')
+ page.locator('#browse').click();expect(page.locator('.picker-card')).to_have_count(19);page.locator('#playerFilter').select_option('3');expect(page.locator('.picker-card')).to_have_count(8)
+ eligible=page.locator('.picker-card').evaluate_all('(cards)=>cards.map(c=>c.dataset.pick)')
+ page.locator('.picker-card').first.click()
+ for _ in range(6):
+  page.locator('#random').click();assert page.locator('#reference').get_attribute('data-challenge') in eligible
+  page.locator('#next').click();assert page.locator('#reference').get_attribute('data-challenge') in eligible
+ page.locator('#browse').click();page.locator('#playerFilter').select_option('1');expect(page.locator('.picker-card')).to_have_count(2)
+ page.locator('#playerFilter').select_option('all');expect(page.locator('.picker-card')).to_have_count(21)
+ page.locator('[data-category="Memes"]').click();assert page.locator('.picker-card').count()>=4;page.locator('.picker-card').first.click();expect(page.locator('#pickerDialog')).not_to_be_visible()
  page.locator('[data-page="album"]').click();expect(page.locator('.album-card')).to_have_count(2);page.locator('.group-options summary').click();page.locator('#groupName').fill('Vossen & Scouts')
  with page.expect_download(timeout=30000) as event:page.locator('#downloadZip').click()
  path=Path('/tmp/fotojacht-v2-test.zip');event.value.save_as(path)
@@ -44,5 +52,5 @@ with sync_playwright() as p:
  page.reload();expect(page.locator('.album-card')).to_have_count(1)
  page.locator('#help').click();expect(page.locator('#tutorialDialog')).to_be_visible();page.locator('#startPlaying').click()
  assert not errors,errors;assert not writes,writes
- print('PASS V2: tutorial, 25 decoded local photos, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
+ print('PASS V2: tutorial, 21 decoded local photos, 19 group cards/player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
  browser.close()

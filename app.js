@@ -15,12 +15,15 @@
     challengeId: data[0]?.id,
     groupName: "Onze groep",
     tutorialSeen: false,
+    playerFilter: "group",
   };
   try {
     prefs = { ...prefs, ...JSON.parse(localStorage.getItem(PREFS) || "{}") };
   } catch {}
   if (!byId.has(prefs.challengeId)) prefs.challengeId = data[0]?.id;
   if (typeof prefs.groupName !== "string") prefs.groupName = "Onze groep";
+  if (!["group", "all", "1", "2", "3", "4"].includes(prefs.playerFilter))
+    prefs.playerFilter = "group";
   const saved = new Map(),
     urls = new Map(),
     failed = new Set(),
@@ -52,6 +55,12 @@
   };
   const current = () => byId.get(prefs.challengeId);
   const playable = () => data.filter((item) => !failed.has(item.id));
+  function matchesPlayers(item) {
+    if (prefs.playerFilter === "all") return true;
+    if (prefs.playerFilter === "group") return item.players >= 2;
+    const count = Number(prefs.playerFilter);
+    return item.players <= count && (item.maxPlayers || item.players) >= count;
+  }
   const blobURL = (key, blob) => {
     if (!urls.has(key)) urls.set(key, URL.createObjectURL(blob));
     return urls.get(key);
@@ -216,7 +225,7 @@
     renderCard();
   }
   function next(step) {
-    const items = playable();
+    const items = playable().filter(matchesPlayers);
     if (!items.length) return;
     let index = items.findIndex((item) => item.id === current()?.id);
     if (index < 0) index = step > 0 ? -1 : 0;
@@ -225,14 +234,22 @@
   $("previous").addEventListener("click", () => next(-1));
   $("next").addEventListener("click", () => next(1));
   $("random").addEventListener("click", () => {
-    const items = playable().filter((item) => item.id !== current()?.id),
+    const items = playable().filter(
+        (item) => matchesPlayers(item) && item.id !== current()?.id,
+      ),
       fresh = items.filter((item) => !saved.has(item.id)),
       pool = fresh.length ? fresh : items;
     if (pool.length) select(pool[Math.floor(Math.random() * pool.length)].id);
   });
   function renderPicker() {
     $("deckCount").textContent = playable().length;
-    const categories = ["Alles", ...new Set(data.map((item) => item.category))];
+    const eligible = playable().filter(matchesPlayers);
+    const categories = [
+      "Alles",
+      ...new Set(eligible.map((item) => item.category)),
+    ];
+    if (category && !categories.includes(category)) category = "";
+    $("playerFilter").value = prefs.playerFilter;
     $("categories").innerHTML = categories
       .map(
         (cat) =>
@@ -248,7 +265,8 @@
         }),
       );
     const items = playable().filter(
-      (item) => !category || item.category === category,
+      (item) =>
+        matchesPlayers(item) && (!category || item.category === category),
     );
     $("pickerGrid").innerHTML =
       items
@@ -257,7 +275,7 @@
             `<button class="picker-card" data-pick="${item.id}"><img src="${item.image}" alt="${esc(item.title)}" loading="lazy">${saved.has(item.id) ? '<b class="done-dot">✓</b>' : ""}<span class="caption">${esc(item.title)}<small>${item.people || item.players} ${item.players === 1 ? "persoon" : "personen"} · ${esc(item.difficulty)}</small></span></button>`,
         )
         .join("") ||
-      '<p class="hint">Geen foto’s beschikbaar in deze categorie.</p>';
+      '<p class="hint">Geen kaarten voor deze selectie. Kies een ander aantal spelers of een andere categorie.</p>';
     $("pickerGrid")
       .querySelectorAll("[data-pick]")
       .forEach((button) =>
@@ -281,6 +299,11 @@
         ),
       );
   }
+  $("playerFilter").addEventListener("change", () => {
+    prefs.playerFilter = $("playerFilter").value;
+    persist();
+    renderPicker();
+  });
   $("browse").addEventListener("click", () => {
     renderPicker();
     openDialog("pickerDialog");
