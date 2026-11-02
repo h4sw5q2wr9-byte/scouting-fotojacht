@@ -1,1 +1,19 @@
-{"name":"FOTOJACHT — Scouting Foto Challenge","short_name":"FOTOJACHT","description":"Scouting opdracht: bekende foto's en memes namaken","start_url":"./","scope":"./","display":"standalone","theme_color":"#101218","background_color":"#101218","lang":"nl"}
+{
+  "name": "FOTOJACHT — Scouting Foto Challenge",
+  "short_name": "FOTOJACHT",
+  "description": "Scouting opdracht: bekende foto's en memes namaken",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#101218",
+  "background_color": "#101218",
+  "lang": "nl",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

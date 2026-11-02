@@ -1,31 +1,56 @@
-# FOTOJACHT 📸 — Scouting
+# 📸 FOTOJACHT — Scouting Photo Challenge
 
-Mobielvriendelijke fotochallenge met **125** opdrachten, waarvan **47 Nederlandse** (memes + tv/film).
+Een Nederlandse, mobiele fotochallenge zonder account of backend. Kies een bekende scène, maak de pose na en geef elkaar punten. **145 opdrachten**, inclusief alle **125 oorspronkelijke opdrachten**, en **11 lokale referenties**. Andere opdrachten hebben een gerichte externe afbeeldingenzoeker voor de precieze scène; er worden geen willekeurige filmposters als scène getoond.
 
-## Online zetten met GitHub Pages
+## Spelen
 
-1. Maak op GitHub een **openbare** repository, bijvoorbeeld `scouting-fotojacht`.
-2. Upload **index.html**, **challenges.js**, **sw.js** en **manifest.webmanifest** (direct in de hoofdmap van de repository). Upload desgewenst ook deze README.
-3. Ga naar **Settings → Pages → Build and deployment → Deploy from a branch**.
-4. Kies **main** en **/(root)** en sla op.
-5. De site verschijnt doorgaans op `https://JOUW-GEBRUIKERSNAAM.github.io/scouting-fotojacht/`.
+1. Zoek op titel, kies een categorie of niveau, of laat je verrassen. Je kunt altijd vrij rondkijken.
+2. Open de opdracht. Een lokale foto staat direct in beeld. Bij een externe zoekreferentie opent **Zoek origineel** Google Afbeeldingen. Kies daar het exacte beeld; een toegestaan eigen voorbeeld kun je op je apparaat bewaren.
+3. Stel onderaan 3, 5, 10 of 15 minuten in en kies **Start ronde**. Pauzeer of reset via de vaste timer. De resterende tijd wordt berekend met een eindtijd, ook na schermvergrendeling. Safari kan op de achtergrond geen melding garanderen: de verstreken tijd wordt bij terugkomst bijgewerkt.
+4. Kies **Maak of kies een foto**. Op een telefoon kun je via de systeembestandskiezer de camera of fotobibliotheek gebruiken. Je foto staat naast het voorbeeld. Met **Vergroot** bekijk je het origineel beeldvullend.
+5. Selecteer één van de twee teams en ken 0–10 punten toe. Een opdracht kan eenmaal punten krijgen; het scorebord biedt handmatige correcties. Scores resetten maakt de puntentoekenningen opnieuw vrij.
+6. Kies **Volgende**, **Vorige**, willekeurig of **Sla over**. Willekeurig geeft waar mogelijk voorrang aan niet-afgeronde, niet-overgeslagen opdrachten. Overgeslagen opdrachten blijven vrij te bekijken.
 
-> Als je de ZIP gebruikt, upload dan **de bestanden uit de ZIP**: niet de ZIP zelf.
+Favorieten, filters, teamnamen, scores, puntentoekenningen, voortgang, timerduur en een lopende eindtijd blijven in localStorage. Eigen referenties en recreaties staan in IndexedDB, apart per opdracht. Foto's verlaten de browser niet. Er is geen synchronisatie tussen telefoons. Browsergegevens wissen verwijdert de lokale spelgegevens. Privémodus of opslaglimieten kunnen opslag verhinderen; kies dan een kleinere JPEG. Afbeeldingen van maximaal 12 MB worden geaccepteerd als de browser ze kan openen.
 
-## Gebruik
+## Bronnen en rechten
 
-- Zoek, filter en kies via **🎲 Kies er één** een opdracht.
-- Open de opdracht en klik **Zoek origineel** voor de precieze oorspronkelijke afbeelding.
-- Een deel van de kaarten toont direct een extern gehost voorbeeld; andere laden (indien beschikbaar) een *Wikipedia*-thumbnail. Dat is soms een filmposter of algemene afbeelding en **niet altijd de exacte scène**.
-- Via **Eigen voorbeeld** kun je een **zelf opgeslagen screenshot** of foto instellen op een kaart. Dit blijft alleen op hetzelfde apparaat, via IndexedDB.
-- **Favorieten, voltooid, teamnamen en scores** blijven in je browser opgeslagen (localStorage); geen gedeelde online synchronisatie.
-- Timer met instelbare 3/5/10/15 minuten. Site zelf werkt na eerder bezoeken offline (externe afbeeldingen meestal niet).
-- Op de iPhone kun je met Safari **Deel → Zet op beginscherm** kiezen.
+- **Lokale referentie:** de bron en auteur staan onder de foto. Het register [assets/references/sources.json](assets/references/sources.json) noemt de bronpagina, maker, rechtenstatus en bewerkingen. Het gaat om publiekdomeinwerken en een NASA-foto; de Commons-bronpagina's bevatten de onderbouwing. De afbeeldingen zijn verkleind en omgezet naar WebP. Geen AI-vervangingen.
+- **Externe zoekreferentie:** auteursrechtelijk beschermde scènes en memes worden niet meegeleverd of gehotlinkt. Elke opdracht heeft een specifieke zoekterm. Zoekresultaten kunnen wijzigen; kies het beeld dat bij de pose-instructie hoort. Er wordt geen beschikbaarheid of licentie van externe resultaten beloofd.
+- **Eigen voorbeeld / jullie versie:** alleen op dit apparaat opgeslagen. Gebruik beelden die je mag gebruiken en vraag deelnemers voordat je hun foto's deelt.
 
-## Copyright & privacy
+De bestaande brede opdrachten zijn behouden; de nieuwe opdrachten hebben eigen scènes en unieke titels. De Nederlandse kunstwerken Het melkmeisje en De Nachtwacht zijn toegevoegd als lokaal beschikbare groeps- en soloreferenties.
 
-De website downloadt of herverdeelt geen filmposters of memeafbeeldingen. Een handjevol openbare foto-URL's verschijnt als *extern geladen voorbeeld*; rechthebbenden behouden hun rechten, en hotlinks kunnen verdwijnen of door de host geblokkeerd worden. Wikipedia-foto's worden vanaf Wikipedia geladen. Bezoekers kunnen een eigen afbeelding opslaan op hun apparaat. Deel persoonlijke scoutingfoto's alleen als iedereen dat wil.
+## Lokaal starten en controleren
 
-## Zelf bewerken
+Geen dependencies of buildstap nodig. Gebruik een lokale server (niet file://):
 
-Alle opdrachten staan in `challenges.js`. Elke opdracht heeft een titel, categorie, pose-instructie, zoekopdracht, aantal personen, moeilijkheid en soms een vaste afbeelding/Wikipedia-artikel. Zet voor een ontbrekende exacte afbeelding eventueel een eigen link in `image`, met toestemming van de rechthebbende.
+```sh
+python3 -m http.server 8000 --bind 127.0.0.1
+# open http://127.0.0.1:8000
+node scripts/verify.mjs
+```
+
+`index.html`, `styles.css`, `app.js` en `challenges.js` vormen de app. Alle site-assets gebruiken relatieve paden en werken onder `/scouting-fotojacht/`. Het service worker bewaart de app-shell en bezochte lokale beelden; externe zoekresultaten vereisen internet. Niet-bezochte beelden kunnen offline ontbreken en tonen dan de zoekfallback. Een ontbrekende asset krijgt geen HTML-document als afbeelding terug.
+
+Het optionele onderhoudsscript `scripts/fetch-references.py` vereist Python en Pillow plus curl. Het haalt uitsluitend de vastgelegde publiekdomeinwerken op. Controleer bij wijzigingen eerst de bronpagina en rechten; pas ook het register en de velden in `challenges.js` aan.
+
+## GitHub Pages
+
+De workflow [.github/workflows/pages.yml](.github/workflows/pages.yml) valideert de bibliotheek en publiceert alleen de statische website bij een push naar `main`.
+
+1. Open de repository **Settings → Pages**.
+2. Kies bij **Source: GitHub Actions**. Hiervoor is beheertoegang nodig.
+3. Start onder **Actions → Verify and deploy GitHub Pages → Run workflow**, of push naar `main`.
+4. Wacht tot de deployment groen is.
+
+Verwachte URL na succesvolle publicatie:
+**https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/**
+
+De gebruikte GitHub-integratie kan commits pushen maar krijgt HTTP 403 bij het aanmaken/inschakelen van Pages. Daarom kan de eerste instelling in stap 2 door de eigenaar nodig zijn. De URL is pas gepubliceerd als de Pages-deployment slaagt.
+
+De ongewijzigde aangeleverde site is hersteldbaar met de Git-tag **`original-zip`** (commit `08462d6`). Om te bekijken zonder wijzigingen aan main: `git switch --detach original-zip`.
+
+## Validatie
+
+`node scripts/verify.mjs` controleert unieke IDs en titels, behoud van alle oorspronkelijke IDs, verplichte opdrachtvelden, lokale bronverwijzingen, assets en JavaScript-syntaxis. Mobiele browsercontroles en hun beperkingen staan in [TESTING.md](TESTING.md).

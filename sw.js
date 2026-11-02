@@ -1,9 +1,56 @@
-const NAME='fotojacht-core-v2';
-const CORE=['./','./index.html','./challenges.js','./manifest.webmanifest'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(NAME).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(names=>Promise.all(names.filter(n=>n.startsWith('fotojacht-')&&n!==NAME).map(n=>caches.delete(n)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{
- const u=new URL(e.request.url);
- if(e.request.method!=='GET'||u.origin!==location.origin)return;
- e.respondWith(fetch(e.request).then(resp=>{if(resp.ok){const copy=resp.clone();caches.open(NAME).then(c=>c.put(e.request,copy))}return resp}).catch(()=>caches.match(e.request).then(v=>v||caches.match('./index.html'))));
+const NAME = "fotojacht-v3.0.0";
+const CORE = [
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./challenges.js",
+  "./manifest.webmanifest",
+  "./assets/icon.svg",
+];
+self.addEventListener("install", (event) =>
+  event.waitUntil(
+    caches
+      .open(NAME)
+      .then((cache) => cache.addAll(CORE))
+      .then(() => self.skipWaiting()),
+  ),
+);
+self.addEventListener("activate", (event) =>
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((k) => k.startsWith("fotojacht-") && k !== NAME)
+            .map((k) => caches.delete(k)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  ),
+);
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  if (event.request.method !== "GET" || url.origin !== self.location.origin)
+    return;
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          event.waitUntil(
+            caches.open(NAME).then((cache) => cache.put(event.request, copy)),
+          );
+        }
+        return response;
+      })
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+        if (event.request.mode === "navigate")
+          return (await caches.match("./index.html")) || Response.error();
+        return Response.error();
+      }),
+  );
 });

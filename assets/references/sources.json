@@ -1,0 +1,90 @@
+[
+  {
+    "id": "foto-110",
+    "image": "assets/references/foto-110.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:The_Scream.jpg",
+    "author": "Edvard Munch",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-111",
+    "image": "assets/references/foto-111.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:%C3%9Altima_Cena_-_Da_Vinci_5.jpg",
+    "author": "Leonardo da Vinci",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-112",
+    "image": "assets/references/foto-112.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Grant_Wood_-_American_Gothic_-_Google_Art_Project.jpg",
+    "author": "Grant Wood",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-113",
+    "image": "assets/references/foto-113.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+    "author": "Leonardo da Vinci / C2RMF / Dcoetzee",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-114",
+    "image": "assets/references/foto-114.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Girl_with_a_Pearl_Earring.jpg",
+    "author": "Johannes Vermeer",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-120",
+    "image": "assets/references/foto-120.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:We_Can_Do_It%21.jpg",
+    "author": "J. Howard Miller / Westinghouse",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-121",
+    "image": "assets/references/foto-121.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Creation_of_Adam_%28Michelangelo%29_Detail.jpg",
+    "author": "Michelangelo",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-126",
+    "image": "assets/references/foto-126.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer_-_Het_melkmeisje_-_Google_Art_Project.jpg",
+    "author": "Johannes Vermeer",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-127",
+    "image": "assets/references/foto-127.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Rembrandt_Harmensz._van_Rijn_-_Nachtwacht_-_Google_Art_Project.jpg",
+    "author": "Rembrandt van Rijn",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-128",
+    "image": "assets/references/foto-128.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Buzz_salutes_the_U.S._Flag.jpg",
+    "author": "NASA / Neil Armstrong",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  },
+  {
+    "id": "foto-129",
+    "image": "assets/references/foto-129.webp",
+    "source": "https://commons.wikimedia.org/wiki/File:Uncle_Sam_%28pointing_finger%29.jpg",
+    "author": "James Montgomery Flagg",
+    "license": "Publiek domein",
+    "modifications": "Verkleind en omgezet naar WebP"
+  }
+]
