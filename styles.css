@@ -774,3 +774,8 @@ dialog::backdrop {
 
 .deck-toolbar { flex-wrap: wrap; }
 #actionDeck { color: var(--orange); }
+
+/* Shorter, readable photo-first controls. */
+.ui-icon{width:22px;height:22px;flex-shrink:0;vertical-align:middle;margin-right:7px}.icon-button .ui-icon{margin:0}.header-tools{gap:8px}.header-tools #help{font-size:12px;width:auto;padding:0 10px}#groupBadge{max-width:145px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.intro{margin-bottom:18px}.intro h1{font-size:clamp(30px,7vw,46px);line-height:1.08}.intro .eyebrow{margin-bottom:8px}.pose-hints summary{color:var(--muted);font-size:14px;padding:7px 0;min-height:44px}.pose-hints p{font-size:15px;line-height:1.5}.deck-toolbar{gap:8px;justify-content:flex-start}.deck-toolbar button{font-size:14px;display:inline-flex;align-items:center;min-height:48px}.bottom-nav .ui-icon{margin:0;width:24px;height:24px}.navigation button{display:inline-flex;align-items:center}.reset-link{margin:12px 0;color:#ffaaa3}.danger{background:#b62b3b;color:#fff}#groupSetupForm .primary{margin-top:20px}#groupSetupForm input{font-size:18px}#photoActions{flex-wrap:wrap}#bestPose{flex-basis:100%}
+
+.header-tools{min-width:0;flex:1;justify-content:flex-end}.header-tools #groupBadge{flex-shrink:1;min-width:0}.brand{flex-shrink:0}@media(max-width:480px){.brand i{display:none}.header{padding:16px 18px}.header-tools #groupBadge{max-width:105px}}

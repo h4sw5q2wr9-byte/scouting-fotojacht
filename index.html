@@ -76,23 +76,23 @@
         >FOTO<span>JACHT</span><i aria-hidden="true">✶</i></a
       >
       <div class="header-tools">
-        <span class="edition">MAAK HET NA</span
+        <button id="groupBadge" class="text-button" aria-label="Teamnaam wijzigen">Onze groep</button
         ><button id="help" class="icon-button" aria-label="Korte uitleg">
-          ?
+          Uitleg
         </button>
       </div>
     </header>
     <main>
       <section id="deckPage">
         <div class="intro">
-          <p class="eyebrow">DE SCOUTING FOTOCHALLENGE</p>
-          <h1>MAAK <em>’M NA.</em></h1>
-          <p>Grappige poses. Met z’n tweeën, drieën of vieren.</p>
+          <p class="eyebrow">SCOUTING FOTOCHALLENGE</p>
+          <h1>PAK EEN <em>POSE.</em></h1>
+
         </div>
         <div class="deck-toolbar">
           <button id="browse" class="secondary">
-            ▦ Alle <span id="deckCount">50</span> kaarten</button
-          ><button id="actionDeck" class="text-button">⚡ Actie &amp; dans</button><button id="random" class="text-button">Verras ons ↗</button>
+            <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z"/></svg>Alle <span id="deckCount">56</span> kaarten</button
+          ><button id="actionDeck" class="text-button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 10-13h-7z"/></svg>Actie &amp; dans</button><button id="random" class="text-button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h3c5 0 7 12 12 12h3 M17 14l4 4-4 4 M3 18h3c2 0 3-2 4-4 M14 8c1-1 2-2 4-2h3 M17 2l4 4-4 4"/></svg>Willekeurig</button>
         </div>
         <article id="challenge" class="challenge">
           <div class="photo-topline">
@@ -104,7 +104,7 @@
             aria-label="Vergroot de referentiefoto"
           >
             <img id="reference" alt="" /><span class="zoom-label"
-              >⤢ Vergroot</span
+              ><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H3v5 M16 3h5v5 M3 16v5h5 M21 16v5h-5"/></svg>Vergroot</span
             >
           </button>
           <div class="card-copy">
@@ -112,7 +112,7 @@
               <h2 id="challengeTitle"></h2>
               <span id="doneBadge" hidden>✓</span>
             </div>
-            <p id="challengeDescription"></p>
+            <details class="pose-hints"><summary>Tip voor de pose</summary><p id="challengeDescription"></p></details>
             <p id="challengeMeta" class="meta"></p>
             <p id="imageError" class="error" hidden>
               Deze foto kon niet laden. Vernieuw de pagina of kies een andere
@@ -121,34 +121,34 @@
           </div>
         </article>
         <button id="takePhoto" class="primary wide">
-          ＋ Maak jullie versie
+          <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h4l2-3h6l2 3h4v14H3z M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0"/></svg>Foto maken
         </button>
         <p id="saveHint" class="hint center">
           Alleen op deze telefoon. Niets wordt geüpload.
         </p>
         <button id="compareCurrent" class="secondary wide" hidden>
-          Bekijk jullie vergelijking →
+          Vergelijk foto’s
         </button>
         <div class="navigation">
-          <button id="previous" class="text-button">← Vorige</button
+          <button id="previous" class="text-button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5-7 7 7 7"/></svg>Vorige</button
           ><span id="progress"></span
-          ><button id="next" class="text-button">Volgende →</button>
+          ><button id="next" class="text-button">Volgende<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 5 7 7-7 7"/></svg></button>
         </div>
         <a class="finish-link" href="#album"
-          >Klaar voor vanavond? Download jullie ZIP ↗</a
+          >Bekijk jullie album</a
         >
       </section>
       <section id="albumPage" hidden>
         <div class="intro">
-          <p class="eyebrow">ALLEMAAL OP DEZE TELEFOON</p>
-          <h1>DIT ZIJN<br /><em>JULLIE MOMENTEN.</em></h1>
+          <p class="eyebrow">JULLIE TEAMALBUM</p>
+          <h1>JULLIE <em>FOTO’S.</em></h1>
           <p id="albumCount"></p>
         </div>
-        <button id="downloadZip" class="primary wide">↓ Download ZIP</button>
+        <button id="downloadZip" class="primary wide"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12 M6 9l6 6 6-6 M3 17v4h18v-4"/></svg>Download ZIP</button>
         <button id="shareZip" class="secondary wide" hidden>Deel ZIP…</button>
         <p id="exportStatus" class="hint" role="status"></p>
         <details class="group-options">
-          <summary>Groepsnaam voor de ZIP (optioneel)</summary>
+          <summary>Teamnaam wijzigen</summary>
           <label for="groupName">Jullie groepsnaam</label
           ><input
             id="groupName"
@@ -180,65 +180,53 @@
           Bewaar je ZIP voordat je browsergegevens wist. Elke telefoon heeft
           zijn eigen album. Gebruik geen privémodus.
         </p>
+        <button id="resetGame" class="text-button reset-link">Spel opnieuw instellen</button>
       </section>
       <footer>
-        <span>Één groep. Eén telefoon. Heel veel slechte poses.</span
-        ><a href="credits.html">Fotocredits</a>
+        <a href="credits.html">Fotocredits</a>
       </footer>
     </main>
     <nav class="bottom-nav" aria-label="Navigatie">
       <a href="#deck" data-page="deck" aria-current="page"
-        >▣ <span>De kaarten</span></a
+        ><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z"/></svg><span>Spelen</span></a
       ><a href="#album" data-page="album"
-        >▦ <span aria-live="polite" aria-atomic="true">Jullie foto’s <b id="albumBadge">0</b></span></a
+        ><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z M3 17l6-6 4 4 3-3 5 5 M8 7h.01"/></svg><span aria-live="polite" aria-atomic="true">Album <b id="albumBadge">0</b></span></a
       >
     </nav>
     <dialog id="tutorialDialog">
       <div class="dialog-header">
-        <span class="eyebrow">ZO WERKT HET / 15 SECONDEN</span
+        <span class="eyebrow">IN 3 STAPPEN</span
         ><button
           class="icon-button"
           data-close="tutorialDialog"
           aria-label="Sluiten"
         >
-          ✕
+          <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12 M18 6 6 18"/></svg>
         </button>
       </div>
       <div class="dialog-body tutorial">
-        <h2>VAN ICOON<br />NAAR <em>JULLIE.</em></h2>
-        <ol>
-          <li>
-            <b>01</b
-            ><span><strong>Kies een foto.</strong> Of laat je verrassen.</span>
-          </li>
-          <li>
-            <b>02</b
-            ><span
-              ><strong>Maak ’m na.</strong> Gebruik wat er om je heen
-              ligt.</span
-            >
-          </li>
-          <li>
-            <b>03</b
-            ><span
-              ><strong>Bewaar & vergelijk.</strong> Eén foto per opdracht.</span
-            >
-          </li>
-          <li>
-            <b>04</b
-            ><span
-              ><strong>Download de ZIP.</strong> Alle foto’s, titels en
-              vergelijkingen.</span
-            >
-          </li>
-        </ol>
+        <h2>ZO SPEEL JE.</h2>
+        <ol><li><b>1</b><span><strong>Kies een foto.</strong></span></li><li><b>2</b><span><strong>Maak de pose na.</strong></span></li><li><b>3</b><span><strong>Bewaar, vergelijk en download.</strong></span></li></ol>
         <button id="startPlaying" class="primary wide">
-          We gaan ervoor ↗
+          Volgende
         </button>
         <p class="hint center">
-          Eén telefoon per groep. Foto’s blijven op die telefoon.
+          Jullie foto’s blijven op deze telefoon.
         </p>
       </div>
+    </dialog>
+    <dialog id="groupSetupDialog" aria-labelledby="groupSetupTitle">
+      <div class="dialog-header"><h2 id="groupSetupTitle">JULLIE TEAM.</h2></div>
+      <form id="groupSetupForm" class="dialog-body">
+        <label for="groupSetupName">Hoe heet jullie team?</label>
+        <input id="groupSetupName" maxlength="40" autocomplete="off" placeholder="Bijvoorbeeld De Slappe Dabs" />
+        <button type="submit" class="primary wide">Spelen</button>
+        <button type="button" id="skipGroupName" class="text-button wide">Later invullen</button>
+      </form>
+    </dialog>
+    <dialog id="resetDialog" aria-labelledby="resetTitle">
+      <div class="dialog-header"><h2 id="resetTitle">OPNIEUW BEGINNEN?</h2></div>
+      <div class="dialog-body"><p>Dit verwijdert alle in FOTOJACHT bewaarde foto’s, je teamnaam en voortgang. Ook foto’s uit eerdere versies worden gewist.</p><p><strong>Download eerst jullie ZIP. Verwijderen kun je niet terugdraaien.</strong></p><p class="hint">Foto’s in je fotobibliotheek en gedownloade ZIP-bestanden blijven staan.</p><p id="resetStatus" role="status"></p><button id="confirmReset" class="primary wide danger">Verwijder en begin opnieuw</button><button data-close="resetDialog" class="secondary wide">Annuleren</button></div>
     </dialog>
     <dialog id="pickerDialog">
       <div class="dialog-header">
@@ -248,7 +236,7 @@
           data-close="pickerDialog"
           aria-label="Sluiten"
         >
-          ✕
+          <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12 M18 6 6 18"/></svg>
         </button>
       </div>
       <div class="dialog-body">
@@ -280,7 +268,7 @@
           data-close="uploadDialog"
           aria-label="Sluiten"
         >
-          ✕
+          <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12 M18 6 6 18"/></svg>
         </button>
       </div>
       <div class="dialog-body">
@@ -303,7 +291,7 @@
           data-close="viewerDialog"
           aria-label="Sluiten"
         >
-          ✕
+          <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12 M18 6 6 18"/></svg>
         </button>
       </div>
       <div class="dialog-body">

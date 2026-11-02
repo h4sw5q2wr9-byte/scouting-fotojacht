@@ -9,6 +9,7 @@
       item.status === "ready" &&
       /^assets\/references\/[^?#]+\.(jpe?g|png|webp)$/i.test(item.image || ""),
   );
+  const cameraIcon = $("takePhoto").querySelector("svg")?.outerHTML || "";
   const byId = new Map(data.map((item) => [item.id, item]));
   const PREFS = "fotojacht-deck-v2";
   let prefs = {
@@ -134,6 +135,7 @@
       if (dialog.id === "tutorialDialog") {
         prefs.tutorialSeen = true;
         persist();
+        if (!prefs.groupReady) setTimeout(() => openGroupSetup(), 0);
       }
       if (dialog.id === "uploadDialog" && pending) {
         URL.revokeObjectURL(pending.url);
@@ -145,7 +147,7 @@
     dialog.addEventListener("click", (event) => {
       if (
         event.target !== dialog ||
-        (dialog.id === "uploadDialog" && $("savePhoto").disabled)
+        (dialog.id === "uploadDialog" && $("savePhoto").disabled) || dialog.id === "groupSetupDialog" || (dialog.id === "resetDialog" && $("confirmReset").disabled)
       )
         return;
       const r = dialog.getBoundingClientRect();
@@ -161,6 +163,45 @@
   $("startPlaying").addEventListener("click", () =>
     closeDialog("tutorialDialog"),
   );
+  function openGroupSetup() {
+    $("groupSetupName").value = prefs.groupName === "Onze groep" ? "" : prefs.groupName;
+    openDialog("groupSetupDialog");
+  }
+  function finishGroupSetup() {
+    prefs.groupName = $("groupSetupName").value.trim().slice(0, 40) || "Onze groep";
+    prefs.groupReady = true;
+    persist();
+    $("groupName").value = prefs.groupName;
+    $("groupBadge").textContent = prefs.groupName;
+    closeDialog("groupSetupDialog");
+    renderAlbum();
+  }
+  $("groupSetupForm").addEventListener("submit", (event) => { event.preventDefault(); finishGroupSetup(); });
+  $("skipGroupName").addEventListener("click", finishGroupSetup);
+  $("groupBadge").addEventListener("click", openGroupSetup);
+  $("groupSetupDialog").addEventListener("cancel", (event) => { event.preventDefault(); finishGroupSetup(); });
+  $("resetDialog").addEventListener("cancel", (event) => { if ($("confirmReset").disabled) event.preventDefault(); });
+  $("resetGame").addEventListener("click", () => openDialog("resetDialog"));
+  $("confirmReset").addEventListener("click", () => busy($("confirmReset"), async () => {
+    $("resetStatus").textContent = "Foto’s verwijderen…";
+    try {
+      const database = await db();
+      const stores = Array.from(database.objectStoreNames);
+      await write(stores, (tx) => stores.forEach((store) => tx.objectStore(store).clear()));
+      for (const key of [...urls.keys()]) revoke(key);
+      if (pending) { URL.revokeObjectURL(pending.url); pending = null; }
+      saved.clear(); oldPhotos = []; preparedZIP = null;
+      for (const storage of [localStorage, sessionStorage]) {
+        for (const key of Object.keys(storage)) if (/fotojacht/i.test(key)) storage.removeItem(key);
+      }
+      for (const entry of document.cookie.split(";")) {
+        const key = entry.split("=")[0].trim();
+        if (/fotojacht/i.test(key)) for (const path of ["/", location.pathname.replace(/[^/]*$/, "")]) document.cookie = `${key}=; Max-Age=0; path=${path}; SameSite=Lax`;
+      }
+      location.replace(location.pathname + location.search);
+    } catch (error) { $("resetStatus").textContent = "Wissen is niet voltooid. Probeer opnieuw."; throw error; }
+  }));
+  window.addEventListener("storage", (event) => { if (event.key === PREFS && event.newValue === null) location.reload(); });
   $("help").addEventListener("click", () => openDialog("tutorialDialog"));
   $("uploadDialog").addEventListener("cancel", (event) => {
     if ($("savePhoto").disabled) event.preventDefault();
@@ -187,6 +228,7 @@
         ? "Lokale foto-opslag laden…"
         : "Alleen op deze telefoon. Niets wordt geüpload.";
     $("albumBadge").textContent = saved.size;
+    $("groupBadge").textContent = prefs.groupName;
     $("progress").textContent = `${saved.size} / ${data.length} gemaakt`;
   }
   function renderCard() {
@@ -212,9 +254,7 @@
     const done = saved.has(item.id);
     $("doneBadge").hidden = !done;
     $("compareCurrent").hidden = !done;
-    $("takePhoto").textContent = done
-      ? "↺ Kies een nieuwe versie"
-      : "＋ Maak jullie versie";
+    $("takePhoto").innerHTML = cameraIcon + (done ? "Nieuwe foto" : "Foto maken");
     $("imageError").hidden = !failed.has(item.id);
     $("deckCount").textContent = playable().length;
     syncButtons();
@@ -635,7 +675,7 @@
       b.created_at.localeCompare(a.created_at),
     );
     $("albumCount").textContent =
-      `${photos.length} van de ${data.length} kaarten nagemaakt. Jullie foto's blijven op deze telefoon.`;
+      `${photos.length} foto’s · ${prefs.groupName || "Onze groep"}`;
     $("albumGrid").innerHTML = photos.map(albumCard).join("");
     $("emptyAlbum").hidden = photos.length > 0;
     $("legacySection").hidden = !oldPhotos.length;
@@ -656,6 +696,7 @@
     preparedZIP = null;
     $("shareZip").hidden = true;
     prefs.groupName = $("groupName").value.slice(0, 40);
+    $("groupBadge").textContent = prefs.groupName || "Onze groep";
     persist();
   });
   function download(blob, filename) {
@@ -868,6 +909,7 @@
   renderAlbum();
   initStorage();
   if (!prefs.tutorialSeen) openDialog("tutorialDialog");
+  else if (!prefs.groupReady) openGroupSetup();
   if (
     "serviceWorker" in navigator &&
     (location.protocol === "https:" ||

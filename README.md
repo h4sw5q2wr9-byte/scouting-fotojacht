@@ -2,12 +2,12 @@
 
 **Live:** https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/
 
-Eén groep per telefoon. **50 lokaal ingebouwde referenties**: Grappige interacties, komische scènes en overdreven reacties. **44 groepskaarten**, plus 6 solo-reacties (één daarvan ook met twee personen). Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
+Eén groep per telefoon. **56 lokaal ingebouwde referenties**: Grappige interacties, komische scènes en overdreven reacties. **49 groepskaarten**, plus 7 solo-reacties (één daarvan ook met twee personen). Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
 
 ## Vanavond gebruiken
 
 1. Open de site en lees de vier korte stappen. De **?** rechtsboven opent de uitleg opnieuw.
-2. Kies **Alle 50 kaarten** of **Verras ons**. De kiezer toont alle kaarten, met de tien aangeleverde memes vooraan. Zoek op titel of filter op spelers. Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
+2. Kies **Alle 56 kaarten** of **Verras ons**. De kiezer toont alle kaarten, met de tien aangeleverde memes vooraan. Zoek op titel of filter op spelers. Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
 3. Kies **Maak jullie versie**, maak of kies een foto en tik **Bewaar & vergelijk**.
 4. Bekijk beide foto’s naast elkaar en ga door naar de volgende kaart. Er blijft **één foto per opdracht** bewaard; een nieuwe versie vervangt de vorige na bevestiging.
 5. Tik onderaan op **Jullie foto’s**, daarna op de grote knop **Download ZIP**.
@@ -82,4 +82,13 @@ Herstelpunt: `before-scout-night-photos-2026-11-02`.
 ## Meer actie: 50 foto’s
 Elf nieuwe referenties: vierpersoons-dab, NASA Gangnam Style (vier dansers), YMCA-letters, Star Wars-disco, Macarena-les, vier verdwaalde Teletubbies, floss met een koe, vier dramatische denkers, Obama en Biden die rennen, Obama met de paashaas en een echte Naruto-run (stilstaand frame uit de brongif). Alle referenties zijn lokaal, met WebP/JPEG en credits. De beperkte uitsnedes en het gekozen GIF-frame staan in de metadata. Geen speelgoed- of AI-foto’s toegevoegd. Er zijn 44 groepsopdrachten en 6 solo-kaarten.
 
-De app begint na deze update bij de groeps-dab. **Actie & dans** opent alle actiekaarten direct. **Alle 50 kaarten** wist zoek-, categorie- en spelersfilters zodat een oud filter geen nieuwe beelden verstopt. Bestaande foto’s en favorieten blijven behouden. Herstelpunt: `before-action-deck-2026-11-02`.
+De app begint na deze update bij de groeps-dab. **Actie & dans** opent alle actiekaarten direct. **Alle 56 kaarten** wist zoek-, categorie- en spelersfilters zodat een oud filter geen nieuwe beelden verstopt. Bestaande foto’s en favorieten blijven behouden. Herstelpunt: `before-action-deck-2026-11-02`.
+
+
+## Teamnaam, reset en afwisselende foto’s
+Nu 56 referenties, met zes nieuwe situaties: kussengevecht (3), zaklopen (3), taartgrap (2), menselijke kruiwagen (2), limbo (1) en armpje drukken met scheidsrechter (3). Alle zes zijn visueel gecontroleerde foto’s met lokale JPEG/WebP en credits. Tekeningen, reclamebeelden, onduidelijke uitsnedes en grote menigten zijn niet toegevoegd.
+
+Na de korte uitleg vul je de teamnaam in of kies je Later invullen. Terugkerende spelers krijgen deze vraag eenmalig als die nog niet is ingevuld. De naam verschijnt bovenaan en in de ZIP. Tips bij poses zijn inklapbaar. Knoppen hebben vaste SVG-iconen en leesbare labels.
+
+**Album → Spel opnieuw instellen** opent een waarschuwing. Na bevestiging worden alle huidige én oude foto’s en teams in de app-database gewist, plus FOTOJACHT-instellingen, sessiegegevens en eventuele FOTOJACHT-cookies. Andere apps op hetzelfde domein blijven ongemoeid. De openbare referentiecache blijft beschikbaar om ook offline opnieuw te kunnen beginnen. Reeds gedownloade ZIP-bestanden op de telefoon kan de site niet wissen.
+Herstelpunt: `before-team-reset-variety-2026-11-02`.

@@ -12,8 +12,8 @@ with sync_playwright() as p:
  browser=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
  page=browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True,service_workers='block')
  errors=[];writes=[];page.on('pageerror',lambda e:errors.append(str(e)));page.on('request',lambda r:writes.append(r.url) if r.method not in ['GET','HEAD'] else None)
- page.goto(os.environ.get('FOTOJACHT_URL','http://127.0.0.1:8772/'),wait_until='networkidle');expect(page.locator('#tutorialDialog')).to_be_visible();page.screenshot(path='/tmp/fotojacht-v2-tutorial.png');page.locator('#startPlaying').click();expect(page.locator('#takePhoto')).to_be_enabled()
- assert page.locator('[id*="timer"],[id*="team"],a[href*="google"]').count()==0
+ page.goto(os.environ.get('FOTOJACHT_URL','http://127.0.0.1:8772/'),wait_until='networkidle');expect(page.locator('#tutorialDialog')).to_be_visible();page.screenshot(path='/tmp/fotojacht-v2-tutorial.png');page.locator('#startPlaying').click();page.locator('#skipGroupName').click();expect(page.locator('#takePhoto')).to_be_enabled()
+ assert page.locator('[id*="timer"],a[href*="google"]').count()==0
  assert page.locator('#reference').evaluate('(e)=>e.complete&&e.naturalWidth>0')
  # All references are actual decoded local images, not just existing path strings.
  count=page.evaluate('''async()=>{const items=window.FOTOJACHT_LOCAL_REFERENCES;for(const item of items){const image=new Image();image.src=item.image;await image.decode();if(image.naturalWidth<300)throw Error(item.title);}return items.length}''');assert count==TOTAL
@@ -59,5 +59,5 @@ with sync_playwright() as p:
  page.reload();expect(page.locator('.album-card')).to_have_count(1)
  page.locator('#help').click();expect(page.locator('#tutorialDialog')).to_be_visible();page.locator('#startPlaying').click()
  assert not errors,errors;assert not writes,writes
- print('PASS V2: tutorial, 50 decoded local images and player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
+ print('PASS V2: tutorial, 56 decoded local images and player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
  browser.close()

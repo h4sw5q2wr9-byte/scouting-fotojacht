@@ -11,7 +11,7 @@ with sync_playwright() as p:
  page.add_init_script("""Object.defineProperty(navigator,'canShare',{configurable:true,value:({files})=>files.length===1&&files[0].type==='application/zip'});Object.defineProperty(navigator,'share',{value:async({files})=>{if(window.shareFailure)throw new DOMException('Test',window.shareFailure);window.sharedFile={name:files[0].name,size:files[0].size};}});""")
  # Optimized-copy failure must gracefully use the original JPEG.
  page.route('**/'+items[0]['previewImage'],lambda r:r.abort())
- page.goto('http://127.0.0.1:8772/');page.locator('#startPlaying').click()
+ page.goto('http://127.0.0.1:8772/');page.locator('#startPlaying').click();page.locator('#skipGroupName').click()
  expect(page.locator('#reference')).to_have_js_property('complete',True)
  expect(page.locator('#takePhoto')).to_be_enabled()
  assert page.locator('#reference').evaluate('(e)=>e.naturalWidth>0&&e.currentSrc.endsWith(".jpg")')
