@@ -2,6 +2,7 @@
 
 - `node scripts/verify.mjs`: 25 unique real local JPEG challenges, V2 manifest/data parity, credits and usable license fields, valid scripts, 145 archived titles, exact 1200×630 social preview, no old timer/team/search controls.
 - `python scripts/browser-smoke.py`: first-open/reopen tutorial, all 25 local photos actually decode, responsive widths 320/375/390/768/1440px, make/choose/save a recreation, one-per-challenge replacement, reload persistence, side-by-side comparison, continue/previous/category picker, current-photo deletion, ZIP CRC/readable paths/titles/originals/credits and actual 1600×1080 JPEG comparisons. The test asserts no network writes and no JS page errors. Test artwork inputs, not personal photos, are used.
+- `python scripts/browser-edge-cases.py`: original v1 photo migration and separate readable legacy ZIP, idempotent recovery after reload, broken-image cards hidden without search links, denied storage reported without pretending to save, complete 25-photo deck cached and loaded offline, including the `?v=2` test link. Personal photos are absent from Cache Storage.
 - `git diff --check`.
 
 Start a repository-only server on `127.0.0.1:8772` for the browser tests. Playwright, Chromium and Pillow are development tools, not visitor dependencies. Generated ZIPs/screenshots stay under `/tmp`.

@@ -1,4 +1,4 @@
-const NAME = "fotojacht-deck-v2.0.0";
+const NAME = "fotojacht-deck-v2.0.1";
 const CORE = [
   "./",
   "./index.html",
@@ -48,10 +48,17 @@ self.addEventListener("fetch", (event) => {
   if (
     event.request.method !== "GET" ||
     url.origin !== self.location.origin ||
-    url.search ||
     event.request.headers.has("authorization")
   )
     return;
+  // Versioned public test links are the same static document, including offline.
+  const versionedNavigation =
+    event.request.mode === "navigate" &&
+    [...url.searchParams.keys()].every((key) => key === "v");
+  if (url.search && !versionedNavigation) return;
+  const normalized = new URL(url);
+  normalized.search = "";
+  const cacheKey = url.search ? normalized.href : event.request;
   if (
     !allowed.has(url.pathname) &&
     !url.pathname.startsWith(
@@ -65,13 +72,13 @@ self.addEventListener("fetch", (event) => {
         if (response.ok) {
           const copy = response.clone();
           event.waitUntil(
-            caches.open(NAME).then((cache) => cache.put(event.request, copy)),
+            caches.open(NAME).then((cache) => cache.put(cacheKey, copy)),
           );
         }
         return response;
       })
       .catch(async () => {
-        const cached = await caches.match(event.request);
+        const cached = await caches.match(cacheKey);
         if (cached) return cached;
         if (event.request.mode === "navigate")
           return (await caches.match("./index.html")) || Response.error();

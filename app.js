@@ -27,6 +27,7 @@
     legacyTitles = new Map();
   let oldPhotos = [],
     ready = false,
+    storageFailed = false,
     category = "",
     pending = null,
     viewed = null,
@@ -164,9 +165,11 @@
     $("takePhoto").disabled = !ready || !current() || failed.has(current()?.id);
     $("downloadZip").disabled = exporting || !saved.size;
     $("legacyZip").disabled = exporting || !oldPhotos.length;
-    $("saveHint").textContent = !ready
-      ? "Lokale foto-opslag laden…"
-      : "Alleen op deze telefoon. Niets wordt geüpload.";
+    $("saveHint").textContent = storageFailed
+      ? "Foto-opslag niet beschikbaar. Open de site in een normale browser en vernieuw."
+      : !ready
+        ? "Lokale foto-opslag laden…"
+        : "Alleen op deze telefoon. Niets wordt geüpload.";
     $("albumBadge").textContent = saved.size;
     $("progress").textContent = `${saved.size} / ${data.length} gemaakt`;
   }
@@ -228,6 +231,7 @@
     if (pool.length) select(pool[Math.floor(Math.random() * pool.length)].id);
   });
   function renderPicker() {
+    $("deckCount").textContent = playable().length;
     const categories = ["Alles", ...new Set(data.map((item) => item.category))];
     $("categories").innerHTML = categories
       .map(
@@ -369,6 +373,7 @@
       renderAlbum();
     } catch {
       ready = false;
+      storageFailed = true;
       $("saveHint").textContent =
         "Opslag is niet beschikbaar. Open de site in een normale browser en vernieuw.";
       toast(
