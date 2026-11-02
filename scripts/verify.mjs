@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import vm from "node:vm";
 import assert from "node:assert/strict";
@@ -5,7 +6,7 @@ const ctx = { window: {} };
 vm.runInNewContext(fs.readFileSync("challenges.js", "utf8"), ctx);
 const data = ctx.window.FOTOJACHT_LOCAL_REFERENCES;
 assert(
-  data.length >= 16 && data.length <= 30,
+  data.length >= 16 && data.length <= 45,
   "Keep a small, complete local-photo deck",
 );
 assert.equal(new Set(data.map((i) => i.id)).size, data.length);
@@ -31,26 +32,33 @@ for (const item of data) {
   ])
     assert(item[key], `${item.id}: ${key} missing`);
   assert.equal(item.status, "ready");
-  assert.equal(item.imageType, "photograph");
+  assert(item.imageType === "photograph" || (item.userProvided && item.imageType === "user-supplied"));
   assert(
-    Number.isInteger(item.players) && item.players >= 1 && item.players <= 4,
+    Number.isInteger(item.players) && item.players >= 1 && item.players <= (item.userProvided ? 7 : 4),
   );
   assert(
     Number.isInteger(item.maxPlayers) &&
       item.maxPlayers >= item.players &&
-      item.maxPlayers <= 4,
+      item.maxPlayers <= (item.userProvided ? 7 : 4),
   );
   assert(/^assets\/references\/[a-z0-9-]+\.jpg$/.test(item.image), item.image);
   assert(fs.existsSync(item.image), item.image);
   const file = fs.readFileSync(item.image);
   assert.equal(file.readUInt16BE(0), 0xffd8);
   assert(file.length > 10000, `${item.id}: reference too small`);
+  if (item.userProvided) {
+    assert.equal(item.licenseUrl, "docs/user-reference-uploads.md");
+    assert(fs.existsSync(item.licenseUrl));
+    assert.equal(createHash("sha256").update(file).digest("hex"), item.sha256);
+    assert(item.license.includes("copyright retained"));
+  } else {
   assert(
     item.license === "Public domain" ||
       item.license === "CC0" ||
       /^CC BY(?:-SA)? /.test(item.license),
   );
   assert(item.licenseUrl.startsWith("https://creativecommons.org/"));
+  }
 }
 for (const file of ["app.js", "sw.js", "challenges.js", "vendor/fflate.js"])
   new vm.Script(fs.readFileSync(file, "utf8"));
@@ -87,7 +95,7 @@ for (let i = 1; i <= 125; i++)
 assert(
   data.filter((item) => item.players >= 2).length >=
     Math.ceil(data.length * 0.8),
-  "At least 80% of the deck must be for 2–4 people",
+  "At least 80% of the deck must support group play",
 );
 const png = fs.readFileSync("assets/og-image.png");
 assert.equal(png.readUInt32BE(16), 1200);
@@ -95,5 +103,5 @@ assert.equal(png.readUInt32BE(20), 630);
 assert(html.includes('property="og:image"'));
 assert(html.includes('name="twitter:card"'));
 console.log(
-  `PASS: ${data.length} real local-photo challenges, matching V2 manifest/credits, archived earlier titles, valid app/worker, no timers/teams/search detours, social preview intact.`,
+  `PASS: ${data.length} local-image challenges, matching V2 manifest/credits, archived earlier titles, valid app/worker, no timers/teams/search detours, social preview intact.`,
 );

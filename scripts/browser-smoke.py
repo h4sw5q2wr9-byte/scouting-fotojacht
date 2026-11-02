@@ -4,6 +4,10 @@ from pathlib import Path
 from PIL import Image
 import zipfile,json,io,os
 ROOT=Path(__file__).resolve().parents[1]
+ITEMS=json.loads((ROOT/'assets/references/sources.json').read_text())['items']
+TOTAL=len(ITEMS)
+SOLO=sum(x['players']==1 for x in ITEMS)
+THREE=sum(x['players']<=3<=x['maxPlayers'] for x in ITEMS)
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
  page=browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True,service_workers='block')
@@ -12,7 +16,7 @@ with sync_playwright() as p:
  assert page.locator('[id*="timer"],[id*="team"],a[href*="google"]').count()==0
  assert page.locator('#reference').evaluate('(e)=>e.complete&&e.naturalWidth>0')
  # All references are actual decoded local images, not just existing path strings.
- count=page.evaluate('''async()=>{const items=window.FOTOJACHT_LOCAL_REFERENCES;for(const item of items){const image=new Image();image.src=item.image;await image.decode();if(image.naturalWidth<300)throw Error(item.title);}return items.length}''');assert count==21
+ count=page.evaluate('''async()=>{const items=window.FOTOJACHT_LOCAL_REFERENCES;for(const item of items){const image=new Image();image.src=item.image;await image.decode();if(image.naturalWidth<300)throw Error(item.title);}return items.length}''');assert count==TOTAL
  for width in [320,375,390,768,1440]:
   page.set_viewport_size({'width':width,'height':844});assert page.evaluate('document.documentElement.scrollWidth')==width
  page.set_viewport_size({'width':390,'height':844});page.screenshot(path='/tmp/fotojacht-v2-deck.png')
@@ -25,14 +29,15 @@ with sync_playwright() as p:
  page.reload();expect(page.locator('#tutorialDialog')).not_to_be_visible();expect(page.locator('#albumBadge')).to_have_text('1');expect(page.locator('#doneBadge')).to_be_visible()
  page.locator('#next').click();second=page.locator('#challengeTitle').text_content();assert second!=first
  choose_and_save(ROOT/'assets/references/de-mislukte-fusion-dance.jpg');page.locator('#continuePlaying').click();expect(page.locator('#viewerDialog')).not_to_be_visible();expect(page.locator('#albumBadge')).to_have_text('2')
- page.locator('#browse').click();expect(page.locator('.picker-card')).to_have_count(19);page.locator('#playerFilter').select_option('3');expect(page.locator('.picker-card')).to_have_count(8)
+ page.locator('#browse').click();expect(page.locator('.picker-card')).to_have_count(TOTAL);page.locator('#playerFilter').select_option('3');expect(page.locator('.picker-card')).to_have_count(THREE)
  eligible=page.locator('.picker-card').evaluate_all('(cards)=>cards.map(c=>c.dataset.pick)')
  page.locator('.picker-card').first.click()
  for _ in range(6):
   page.locator('#random').click();assert page.locator('#reference').get_attribute('data-challenge') in eligible
   page.locator('#next').click();assert page.locator('#reference').get_attribute('data-challenge') in eligible
- page.locator('#browse').click();page.locator('#playerFilter').select_option('1');expect(page.locator('.picker-card')).to_have_count(2)
- page.locator('#playerFilter').select_option('all');expect(page.locator('.picker-card')).to_have_count(21)
+ page.locator('#browse').click();page.locator('#playerFilter').select_option('1');expect(page.locator('.picker-card')).to_have_count(SOLO)
+ page.locator('#playerFilter').select_option('all');expect(page.locator('.picker-card')).to_have_count(TOTAL)
+ page.locator('#challengeSearch').fill('Spider-Man');expect(page.locator('.picker-card')).to_have_count(1);page.locator('#challengeSearch').fill('')
  page.locator('[data-category="Memes"]').click();assert page.locator('.picker-card').count()>=4;page.locator('.picker-card').first.click();expect(page.locator('#pickerDialog')).not_to_be_visible()
  page.locator('[data-page="album"]').click();expect(page.locator('.album-card')).to_have_count(2);page.locator('.group-options summary').click();page.locator('#groupName').fill('Vossen & Scouts')
  with page.expect_download(timeout=30000) as event:page.locator('#downloadZip').click()
@@ -52,5 +57,5 @@ with sync_playwright() as p:
  page.reload();expect(page.locator('.album-card')).to_have_count(1)
  page.locator('#help').click();expect(page.locator('#tutorialDialog')).to_be_visible();page.locator('#startPlaying').click()
  assert not errors,errors;assert not writes,writes
- print('PASS V2: tutorial, 21 decoded local photos, 19 group cards/player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
+ print('PASS V2: tutorial, 33 decoded local images and player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
  browser.close()

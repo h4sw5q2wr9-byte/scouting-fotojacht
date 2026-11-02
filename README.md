@@ -2,12 +2,12 @@
 
 **Live:** https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/
 
-Eén groep per telefoon. **21 echte, lokaal ingebouwde referentiefoto’s**: Grappige interacties, komische scènes en overdreven reacties. **19 kaarten voor 2–4 personen**, plus 2 optionele solo-reacties. Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
+Eén groep per telefoon. **33 lokaal ingebouwde referenties**: Grappige interacties, komische scènes en overdreven reacties. **28 groepskaarten**, plus 5 solo-reacties (één daarvan ook met twee personen). Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
 
 ## Vanavond gebruiken
 
 1. Open de site en lees de vier korte stappen. De **?** rechtsboven opent de uitleg opnieuw.
-2. Kies **Alle 21 kaarten** of **Verras ons**. De kiezer begint met groepskaarten (2–4). Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
+2. Kies **Alle 33 kaarten** of **Verras ons**. De kiezer toont alle kaarten, met de tien aangeleverde memes vooraan. Zoek op titel of filter op spelers. Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
 3. Kies **Maak jullie versie**, maak of kies een foto en tik **Bewaar & vergelijk**.
 4. Bekijk beide foto’s naast elkaar en ga door naar de volgende kaart. Er blijft **één foto per opdracht** bewaard; een nieuwe versie vervangt de vorige na bevestiging.
 5. Tik onderaan op **Jullie foto’s**, daarna op de grote knop **Download ZIP**.
@@ -53,6 +53,10 @@ Elke werkende push naar **main** wordt direct via GitHub Pages gepubliceerd. Soc
 
 ## Update: teams en humor
 
-De deck is bewust teruggebracht naar 21 kaarten. Negentien zijn voor 2–4 personen; twee optionele solo-reacties staan in het spelersfilter apart. Een foto moest een grappige interactie of uitgesproken pose bevatten. Normale portretten, poses met meer dan vier hoofdrollen, een beeld van zandsculpturen en een architectuurfoto die als perspectiefgrap werd gevonden zijn na visuele controle verworpen. De Cha Cha Cha-foto is onder dezelfde CC BY-SA-licentie uitgesneden op drie zichtbare dansers.
+De deck is uitgebreid naar 33 kaarten. De meeste kaarten zijn voor 2–4 personen; twee aangeleverde groepsfoto’s ondersteunen ook grotere groepen. Een foto moest een grappige interactie of uitgesproken pose bevatten. Normale portretten, poses met meer dan vier hoofdrollen, een beeld van zandsculpturen en een architectuurfoto die als perspectiefgrap werd gevonden zijn na visuele controle verworpen. De Cha Cha Cha-foto is onder dezelfde CC BY-SA-licentie uitgesneden op drie zichtbare dansers.
 
 Herstelpunt vóór deze inhoudswijziging: `before-funny-teams-deck-2026-11-02` (`ac85182`). Bestaande foto’s blijven in het eerdere album staan met hun oorspronkelijke titels en credits.
+
+
+## Update V2.2
+Alle tien aangeleverde beelden zijn exact lokaal opgenomen (Woman yelling at cat, Home Alone, Spider-Man, Distracted Boyfriend, Flynn Rider, Get Out, Up, perspectieftrap, groepsselfie en vele armen), plus twee extra groepsreferenties van Batman en de Three Stooges. Er zijn 33 kaarten. Nieuwe zoekbalk en spelersfilters tot zeven personen. Alle recreaties blijven lokaal; ZIP via **Jullie foto’s → Download ZIP**. Herkomst en SHA256 van gebruikersuploads: `docs/user-reference-uploads.md`. Deze uploads zijn niet vrij gelicentieerd; auteursrechten blijven bij de oorspronkelijke rechthebbenden. Herstelpunt: `before-uploaded-memes-2026-11-02`.

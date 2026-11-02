@@ -15,14 +15,20 @@
     challengeId: data[0]?.id,
     groupName: "Onze groep",
     tutorialSeen: false,
-    playerFilter: "group",
+    playerFilter: "all",
   };
   try {
     prefs = { ...prefs, ...JSON.parse(localStorage.getItem(PREFS) || "{}") };
   } catch {}
+  if (prefs.contentRelease !== "user-memes-v2.2") {
+    prefs.challengeId = data[0]?.id;
+    prefs.playerFilter = "all";
+    prefs.contentRelease = "user-memes-v2.2";
+    try { localStorage.setItem(PREFS, JSON.stringify(prefs)); } catch {}
+  }
   if (!byId.has(prefs.challengeId)) prefs.challengeId = data[0]?.id;
   if (typeof prefs.groupName !== "string") prefs.groupName = "Onze groep";
-  if (!["group", "all", "1", "2", "3", "4"].includes(prefs.playerFilter))
+  if (!["group", "all", "1", "2", "3", "4", "5", "6", "7"].includes(prefs.playerFilter))
     prefs.playerFilter = "group";
   const saved = new Map(),
     urls = new Map(),
@@ -266,7 +272,8 @@
       );
     const items = playable().filter(
       (item) =>
-        matchesPlayers(item) && (!category || item.category === category),
+        matchesPlayers(item) && (!category || item.category === category) &&
+        item.title.toLocaleLowerCase("nl").includes($("challengeSearch").value.trim().toLocaleLowerCase("nl")),
     );
     $("pickerGrid").innerHTML =
       items
@@ -299,6 +306,7 @@
         ),
       );
   }
+  $("challengeSearch").addEventListener("input", renderPicker);
   $("playerFilter").addEventListener("change", () => {
     prefs.playerFilter = $("playerFilter").value;
     persist();

@@ -91,7 +91,7 @@
         </div>
         <div class="deck-toolbar">
           <button id="browse" class="secondary">
-            ▦ Alle <span id="deckCount">21</span> kaarten</button
+            ▦ Alle <span id="deckCount">33</span> kaarten</button
           ><button id="random" class="text-button">Verras ons ↗</button>
         </div>
         <article id="challenge" class="challenge">
@@ -182,7 +182,7 @@
       </section>
       <footer>
         <span>Één groep. Eén telefoon. Heel veel slechte poses.</span
-        ><a href="credits.html">Fotocredits</a><span class="release">V2.1</span>
+        ><a href="credits.html">Fotocredits</a><span class="release">V2.2</span>
       </footer>
     </main>
     <nav class="bottom-nav" aria-label="Navigatie">
@@ -254,14 +254,19 @@
         <div class="player-filter">
           <label for="playerFilter">Hoeveel mensen op de foto?</label
           ><select id="playerFilter">
-            <option value="group">Groepsopdrachten (2–4)</option>
+            <option value="group">Groepsopdrachten</option>
             <option value="2">Met z’n tweeën</option>
             <option value="3">Met z’n drieën</option>
             <option value="4">Met z’n vieren</option>
-            <option value="all">Alles (1–4 personen)</option>
+            <option value="5">Met z’n vijven</option>
+            <option value="6">Met z’n zessen</option>
+            <option value="7">Met z’n zevenen</option>
+            <option value="all">Alle kaarten</option>
             <option value="1">Solo-reacties</option>
           </select>
         </div>
+        <label for="challengeSearch" class="hint">Zoek jullie meme</label>
+        <input id="challengeSearch" type="search" placeholder="Bijvoorbeeld Spider-Man…" autocomplete="off" />
         <div id="categories" class="category-filters"></div>
         <div id="pickerGrid" class="picker-grid"></div>
       </div>

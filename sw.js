@@ -1,4 +1,4 @@
-const NAME = "fotojacht-deck-v2.1.0";
+const NAME = "fotojacht-deck-v2.2.0";
 const CORE = [
   "./",
   "./index.html",
