@@ -2,12 +2,12 @@
 
 **Live:** https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/
 
-Eén groep per telefoon. **33 lokaal ingebouwde referenties**: Grappige interacties, komische scènes en overdreven reacties. **28 groepskaarten**, plus 5 solo-reacties (één daarvan ook met twee personen). Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
+Eén groep per telefoon. **39 lokaal ingebouwde referenties**: Grappige interacties, komische scènes en overdreven reacties. **34 groepskaarten**, plus 5 solo-reacties (één daarvan ook met twee personen). Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
 
 ## Vanavond gebruiken
 
 1. Open de site en lees de vier korte stappen. De **?** rechtsboven opent de uitleg opnieuw.
-2. Kies **Alle 33 kaarten** of **Verras ons**. De kiezer toont alle kaarten, met de tien aangeleverde memes vooraan. Zoek op titel of filter op spelers. Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
+2. Kies **Alle 39 kaarten** of **Verras ons**. De kiezer toont alle kaarten, met de tien aangeleverde memes vooraan. Zoek op titel of filter op spelers. Kies eventueel precies 2, 3 of 4 personen. Vorige, volgende en willekeurig volgen dat spelersfilter. Solo-kaarten staan apart. Het origineel staat groot in de site; tik om te vergroten.
 3. Kies **Maak jullie versie**, maak of kies een foto en tik **Bewaar & vergelijk**.
 4. Bekijk beide foto’s naast elkaar en ga door naar de volgende kaart. Er blijft **één foto per opdracht** bewaard; een nieuwe versie vervangt de vorige na bevestiging.
 5. Tik onderaan op **Jullie foto’s**, daarna op de grote knop **Download ZIP**.
@@ -72,3 +72,8 @@ Klik **Download ZIP**. Als de browser bestandsdeling ondersteunt, verschijnt daa
 In een bewaarde vergelijking kun je **Kies als beste pose** aantikken. Eén favoriet wordt lokaal onthouden, in het album gemarkeerd en in `results.json` als `bestPose` opgenomen. Geen extra teams of scorebord. Ontwikkelversies zijn uit de zichtbare interface verwijderd. Het fotoaantal wordt bij wijziging aan schermlezers gemeld; icoonknoppen hebben tekstlabels.
 
 Extra controle: `python scripts/browser-sharing.py` (gemockt deelmenu; verstuurt niets). Herstelpunt vóór deze update: `before-credits-sharing-2026-11-02`.
+
+
+## Fotodeck voor de Scoutingavond
+Zes extra, visueel gecontroleerde groepsfoto’s: wedding dab (2), Gangnam Style-liftscène (2), Titanic-pose (2), Bert en Ernie (2), kabouterdans met dikke buiken (3), Team Rocket en Pikachu (3). De aanwijzingen volgen de echte foto’s en bieden eenvoudige alternatieven voor kostuums. Geen nieuwe spelelementen. Alle eerdere kaarten, favorieten en eigen foto’s blijven bewaard. Totaal: 39 kaarten, waarvan 34 groepsopdrachten. Deze zes nieuwe referenties zijn herbruikbare echte foto’s; cosplay is als zodanig vermeld in de credits. Foto’s van poppen, een grote klas en dubbele dab-/Team Rocket-poses zijn na visuele controle niet toegevoegd.
+Herstelpunt: `before-scout-night-photos-2026-11-02`.

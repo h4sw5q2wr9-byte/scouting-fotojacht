@@ -57,5 +57,5 @@ with sync_playwright() as p:
  page.reload();expect(page.locator('.album-card')).to_have_count(1)
  page.locator('#help').click();expect(page.locator('#tutorialDialog')).to_be_visible();page.locator('#startPlaying').click()
  assert not errors,errors;assert not writes,writes
- print('PASS V2: tutorial, 33 decoded local images and player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
+ print('PASS V2: tutorial, 39 decoded local images and player filters, 320–1440px, one photo per challenge/replacement, reload persistence, compare/continue, categories, ZIP titles/JPEGs/originals/credits, deletion/help; no JS errors or uploads.')
  browser.close()
