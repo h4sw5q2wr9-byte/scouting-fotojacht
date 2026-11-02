@@ -5,25 +5,6 @@
   const challenges = window.CHALLENGES || [];
   const byId = new Map(challenges.map((item) => [item.id, item]));
   const PREFS = "fotojacht-simple-v1";
-  const AUTH_KEY = "fotojacht-private-session-v1";
-  const config = window.FOTOJACHT_CONFIG || {};
-  let validPublicKey = /^sb_publishable_[A-Za-z0-9_-]+$/.test(
-    config.publishableKey || "",
-  );
-  try {
-    validPublicKey ||=
-      JSON.parse(
-        atob(
-          (config.publishableKey || "")
-            .split(".")[1]
-            .replace(/-/g, "+")
-            .replace(/_/g, "/"),
-        ),
-      ).role === "anon";
-  } catch {}
-  const configured =
-    /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(config.url || "") &&
-    validPublicKey;
   let prefs = {
     challengeId: "foto-114",
     teamId: "",
@@ -39,18 +20,14 @@
   if (![180, 300, 600, 900].includes(prefs.duration)) prefs.duration = 300;
   if (!Array.isArray(prefs.favorites)) prefs.favorites = [];
   if (!Array.isArray(prefs.skipped)) prefs.skipped = [];
-  let client = null,
-    session = null,
-    teams = [],
+  let teams = [],
     photos = [],
     currentPhoto = null,
     pendingPhoto = null,
-    inviteTeamId = "",
-    cloudEpoch = 0;
+    storageReady = false,
+    exporting = false;
   const media = new Map(),
-    pendingMedia = new Map(),
-    localReferences = new Map(),
-    legacyPhotos = [];
+    localReferences = new Map();
   const current = () => byId.get(prefs.challengeId);
   const activeTeam = () => teams.find((team) => team.id === prefs.teamId);
   const esc = (value) =>
@@ -74,10 +51,6 @@
       localStorage.setItem(PREFS, JSON.stringify(prefs));
     } catch {}
   };
-  const check = (result) => {
-    if (result.error) throw result.error;
-    return result.data;
-  };
   function toast(message) {
     $("toast").textContent = message;
     $("toast").hidden = false;
@@ -85,18 +58,9 @@
     toast.timeout = setTimeout(() => ($("toast").hidden = true), 4500);
   }
   function friendly(error) {
-    const text = error?.message || "";
-    if (/Invalid login credentials/i.test(text))
-      return "E-mailadres of wachtwoord klopt niet.";
-    if (/Email not confirmed/i.test(text))
-      return "Bevestig eerst je e-mailadres via de mail.";
-    if (/rate limit|too many/i.test(text))
-      return "Even wachten: er zijn te veel pogingen gedaan. Probeer later opnieuw.";
-    if (/network|fetch|offline/i.test(text))
-      return "Geen verbinding. Probeer opnieuw zodra je internet hebt.";
-    if (/quota|storage|opslaan/i.test(text))
-      return "Opslaan is niet gelukt. Probeer een kleinere foto.";
-    return "Dat is niet gelukt. Controleer je verbinding en of je nog toegang hebt.";
+    return /quota|storage/i.test(error?.name || error?.message || "")
+      ? "De browseropslag is vol of niet beschikbaar. Download je ZIP en maak ruimte vrij."
+      : "Dat is niet gelukt. Probeer opnieuw; je opgeslagen foto’s blijven bewaard.";
   }
   async function busy(button, action) {
     if (button.disabled) return;
@@ -130,10 +94,7 @@
         $("uploadPreview").removeAttribute("src");
       }
       if (dialog.id === "photoDialog") currentPhoto = null;
-      if (dialog.id === "inviteDialog") {
-        $("generatedCode").textContent = "";
-        inviteTeamId = "";
-      }
+
       dialog._focus?.focus?.();
     });
     dialog.addEventListener("click", (event) => {
@@ -171,8 +132,6 @@
     });
     if (page === "album") {
       renderAlbum();
-      if (client && session)
-        refreshCloud().catch((error) => toast(friendly(error)));
     }
     window.scrollTo(0, 0);
   }
@@ -393,57 +352,109 @@
   $("timerReset").addEventListener("click", resetTimer);
   setInterval(drawTimer, 500);
   document.addEventListener("visibilitychange", drawTimer);
-  // Existing browser-only reference photos are retained. Never auto-upload old photos.
+  // All personal data stays in IndexedDB; no network writes exist in this app.
   let dbPromise;
   function oldDB() {
     return (dbPromise ||= new Promise((resolve, reject) => {
-      const request = indexedDB.open("scouting-fotojacht-pictures", 1);
-      request.onupgradeneeded = () =>
-        request.result.createObjectStore("images");
-      request.onsuccess = () => resolve(request.result);
+      const request = indexedDB.open("scouting-fotojacht-pictures", 2);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("images"))
+          db.createObjectStore("images");
+        if (!db.objectStoreNames.contains("teams"))
+          db.createObjectStore("teams", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("photos"))
+          db.createObjectStore("photos", { keyPath: "id" });
+      };
+      request.onsuccess = () => {
+        request.result.onversionchange = () => request.result.close();
+        resolve(request.result);
+      };
       request.onerror = () => reject(request.error);
+      request.onblocked = () => {
+        toast("Sluit andere FOTOJACHT-tabbladen en vernieuw deze pagina.");
+      };
     }));
   }
-  async function localWrite(key, blob) {
+  async function writeRecords(stores, action) {
     const db = await oldDB();
     await new Promise((resolve, reject) => {
-      const tx = db.transaction("images", "readwrite");
-      if (blob) tx.objectStore("images").put(blob, key);
-      else tx.objectStore("images").delete(key);
+      const tx = db.transaction(stores, "readwrite");
+      action(tx);
       tx.oncomplete = resolve;
       tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error || new Error("Opslaan mislukt"));
+    });
+  }
+  async function localWrite(key, blob) {
+    await writeRecords(["images"], (tx) => {
+      if (blob) tx.objectStore("images").put(blob, key);
+      else tx.objectStore("images").delete(key);
     });
   }
   async function loadLocal() {
     try {
       const db = await oldDB();
-      const values = await new Promise((resolve, reject) => {
-        const tx = db.transaction("images"),
-          store = tx.objectStore("images");
-        const keys = store.getAllKeys(),
-          blobs = store.getAll();
+      const saved = await new Promise((resolve, reject) => {
+        const tx = db.transaction(["teams", "photos", "images"]);
+        const t = tx.objectStore("teams").getAll(),
+          p = tx.objectStore("photos").getAll(),
+          k = tx.objectStore("images").getAllKeys(),
+          v = tx.objectStore("images").getAll();
         tx.oncomplete = () =>
-          resolve(keys.result.map((key, i) => [key, blobs.result[i]]));
+          resolve({
+            teams: t.result,
+            photos: p.result,
+            images: k.result.map((key, i) => [key, v.result[i]]),
+          });
         tx.onerror = () => reject(tx.error);
       });
-      for (const [key, blob] of values) {
-        if (!(blob instanceof Blob)) continue;
-        const url = URL.createObjectURL(blob);
-        if (String(key).startsWith("recreation:"))
-          legacyPhotos.push({
-            id: key,
-            url,
-            blob,
-            challenge_id: String(key).slice(11),
-            legacy: true,
-          });
-        else if (byId.has(key)) localReferences.set(key, url);
+      teams = saved.teams;
+      photos = saved.photos;
+      const old = saved.images.filter(
+        ([key, blob]) =>
+          String(key).startsWith("recreation:") && blob instanceof Blob,
+      );
+      if (!teams.length || old.length) {
+        if (!teams.length) teams.push({ id: "team-eerste", name: "Mijn team" });
+        if (old.length && !teams.some((t) => t.id === "team-eerder"))
+          teams.push({ id: "team-eerder", name: "Eerdere foto’s" });
+        await writeRecords(["teams", "photos", "images"], (tx) => {
+          teams.forEach((team) => tx.objectStore("teams").put(team));
+          for (const [key, blob] of old) {
+            const photo = {
+              id: "legacy-" + key,
+              team_id: "team-eerder",
+              challenge_id: String(key).slice(11),
+              blob,
+              points: 0,
+              created_at: new Date().toISOString(),
+              referenceBlob: null,
+            };
+            if (!photos.some((p) => p.id === photo.id)) {
+              photos.push(photo);
+              tx.objectStore("photos").put(photo);
+            }
+            tx.objectStore("images").delete(key);
+          }
+        });
       }
+      for (const [key, blob] of saved.images)
+        if (byId.has(key) && blob instanceof Blob)
+          localReferences.set(key, URL.createObjectURL(blob));
+      if (!teams.some((t) => t.id === prefs.teamId))
+        prefs.teamId = teams[0]?.id || "";
+      persist();
+      storageReady = true;
+      renderAccount();
       renderChallenge();
       renderAlbum();
     } catch {
+      storageReady = false;
+      $("storageNotice").hidden = false;
+      updateSaveButton();
       toast(
-        "Lokale opslag is niet beschikbaar. Teamfoto’s worden pas na inloggen gedeeld.",
+        "Foto-opslag is niet beschikbaar. Gebruik een normale browser en probeer opnieuw.",
       );
     }
   }
@@ -509,45 +520,50 @@
     }),
   );
   function updateSaveButton() {
-    const canSave = !!(client && session && activeTeam());
-    $("takePhoto").disabled = !canSave;
-    $("saveHint").textContent = !configured
-      ? "Rondkijken kan al. Privé delen wordt nog aangesloten."
-      : !session
-        ? "Log in om foto’s privé met je team te delen."
-        : !activeTeam()
-          ? "Maak of kies eerst een team via Teams."
-          : "Wordt alleen gedeeld met leden van " + activeTeam().name + ".";
+    $("takePhoto").disabled = !storageReady || !activeTeam();
+    $("saveHint").textContent = storageReady
+      ? "Alleen op deze telefoon · " +
+        (activeTeam()?.name || "kies een team") +
+        " · geen upload"
+      : "Browseropslag laden…";
+    $("downloadAll").disabled = exporting || !photos.length;
+  }
+  function photoURL(photo) {
+    if (!media.has(photo.id))
+      media.set(photo.id, URL.createObjectURL(photo.blob));
+    return media.get(photo.id);
+  }
+  function originalURL(photo) {
+    if (photo.referenceBlob) {
+      const key = photo.id + ":original";
+      if (!media.has(key))
+        media.set(key, URL.createObjectURL(photo.referenceBlob));
+      return media.get(key);
+    }
+    return referenceURL(byId.get(photo.challenge_id) || {}) || "";
   }
   function renderAccount() {
-    $("connectionNotice").hidden = configured;
-    $("authPanel").hidden = !configured || !!session;
-    $("signedInPanel").hidden = !session;
-    $("accountButton").textContent = session ? "Mijn account" : "Inloggen";
-    $("accountEmail").textContent = session?.user?.email || "";
     const options = teams
-      .map((team) => `<option value="${team.id}">${esc(team.name)}</option>`)
+      .map((t) => `<option value="${esc(t.id)}">${esc(t.name)}</option>`)
       .join("");
-    $("activeTeam").innerHTML =
-      '<option value="">Kies een team</option>' + options;
+    $("accountButton").textContent = "Mijn teams";
+    $("activeTeam").innerHTML = options;
     $("activeTeam").value = prefs.teamId;
-    const albumFilter = $("albumTeam").value;
+    const filter = $("albumTeam").value;
     $("albumTeam").innerHTML =
-      '<option value="">Alle mijn teams</option>' + options;
-    $("albumTeam").value = teams.some((team) => team.id === albumFilter)
-      ? albumFilter
-      : "";
+      '<option value="">Alle teams op dit apparaat</option>' + options;
+    $("albumTeam").value = teams.some((t) => t.id === filter) ? filter : "";
     $("teamList").innerHTML = teams
       .map(
         (team) =>
-          `<article class="team-card"><h2>${esc(team.name)}</h2><p class="hint">${photos.filter((photo) => photo.team_id === team.id).length} foto’s · ${photos.filter((photo) => photo.team_id === team.id).reduce((total, photo) => total + photo.points, 0)} punten</p><div class="split"><button class="secondary" data-select-team="${team.id}">Speel voor dit team</button>${team.owner_id === session?.user.id ? `<button class="text-button" data-invite-team="${team.id}">Uitnodigen & leden</button>` : ""}</div></article>`,
+          `<article class="team-card"><h2>${esc(team.name)}</h2><p class="hint">${photos.filter((p) => p.team_id === team.id).length} foto’s · ${photos.filter((p) => p.team_id === team.id).reduce((n, p) => n + p.points, 0)} punten</p><div class="split"><button class="secondary" data-team-select="${esc(team.id)}">Speel voor dit team</button><button class="text-button" data-team-rename="${esc(team.id)}">Naam wijzigen</button></div></article>`,
       )
       .join("");
     $("teamList")
-      .querySelectorAll("[data-select-team]")
-      .forEach((button) =>
-        button.addEventListener("click", () => {
-          prefs.teamId = button.dataset.selectTeam;
+      .querySelectorAll("[data-team-select]")
+      .forEach((b) =>
+        b.addEventListener("click", () => {
+          prefs.teamId = b.dataset.teamSelect;
           persist();
           renderAccount();
           renderChallenge();
@@ -555,10 +571,25 @@
         }),
       );
     $("teamList")
-      .querySelectorAll("[data-invite-team]")
-      .forEach((button) =>
-        button.addEventListener("click", () =>
-          busy(button, () => openInvite(button.dataset.inviteTeam)),
+      .querySelectorAll("[data-team-rename]")
+      .forEach((b) =>
+        b.addEventListener("click", () =>
+          busy(b, async () => {
+            const team = teams.find((t) => t.id === b.dataset.teamRename),
+              name = prompt("Nieuwe teamnaam:", team.name)?.trim();
+            if (!name) return;
+            if (name.length > 40) {
+              toast("Gebruik maximaal 40 tekens.");
+              return;
+            }
+            const updated = { ...team, name };
+            await writeRecords(["teams"], (tx) =>
+              tx.objectStore("teams").put(updated),
+            );
+            Object.assign(team, updated);
+            renderAccount();
+            renderAlbum();
+          }),
         ),
       );
     updateSaveButton();
@@ -568,584 +599,403 @@
     persist();
     renderChallenge();
   });
-  function clearCloud() {
-    cloudEpoch++;
-    teams = [];
-    photos = [];
-    for (const url of media.values()) URL.revokeObjectURL(url);
-    media.clear();
-    pendingMedia.clear();
-    document
-      .querySelectorAll("dialog[open]")
-      .forEach((dialog) => dialog.close());
-    $("photoView").replaceChildren();
-    $("generatedCode").textContent = "";
-    renderAccount();
-    renderChallenge();
-    renderAlbum();
-  }
-  async function refreshCloud() {
-    if (!session || !client) {
+  $("createTeamForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    busy($("createTeamForm").querySelector("button"), async () => {
+      if (!storageReady) return;
+      const name = $("teamName").value.trim();
+      if (!name || name.length > 40) return;
+      const team = { id: crypto.randomUUID(), name };
+      await writeRecords(["teams"], (tx) => tx.objectStore("teams").put(team));
+      teams.push(team);
+      prefs.teamId = team.id;
+      persist();
+      $("teamName").value = "";
       renderAccount();
-      renderAlbum();
-      return;
-    }
-    const epoch = ++cloudEpoch;
-    const newTeams = check(
-      await client.from("teams").select("id,name,owner_id").order("created_at"),
-    );
-    const newPhotos = [];
-    for (let offset = 0; ; offset += 500) {
-      const page = check(
-        await client
-          .from("photos")
-          .select(
-            "id,team_id,owner_id,challenge_id,object_path,points,created_at",
-          )
-          .order("created_at", { ascending: false })
-          .range(offset, offset + 499),
-      );
-      newPhotos.push(...page);
-      if (page.length < 500) break;
-    }
-    if (epoch !== cloudEpoch || !session) return;
-    teams = newTeams;
-    photos = newPhotos;
-    for (const [id, url] of media) {
-      if (!photos.some((photo) => photo.id === id)) {
-        URL.revokeObjectURL(url);
-        media.delete(id);
-      }
-    }
-    if (!teams.some((team) => team.id === prefs.teamId))
-      prefs.teamId = teams[0]?.id || "";
-    persist();
-    renderAccount();
-    renderChallenge();
-    renderAlbum();
-  }
-  async function photoURL(photo) {
-    if (photo.legacy) return photo.url;
-    if (media.has(photo.id)) return media.get(photo.id);
-    if (pendingMedia.has(photo.id)) return pendingMedia.get(photo.id);
-    const epoch = cloudEpoch;
-    const task = (async () => {
-      const blob = check(
-        await client.storage.from("team-photos").download(photo.object_path),
-      );
-      if (epoch !== cloudEpoch || !session) throw new Error("Session changed");
-      const url = URL.createObjectURL(blob);
-      media.set(photo.id, url);
-      return url;
-    })();
-    pendingMedia.set(photo.id, task);
-    try {
-      return await task;
-    } finally {
-      if (pendingMedia.get(photo.id) === task) pendingMedia.delete(photo.id);
-    }
-  }
-  let albumObserver;
-  function observeAlbum() {
-    albumObserver?.disconnect();
-    const load = async (image) => {
-      const photo = photos.find((row) => row.id === image.dataset.photo);
-      if (!photo) return;
-      try {
-        const url = await photoURL(photo);
-        if (image.isConnected) image.src = url;
-      } catch {
-        if (image.isConnected) {
-          image.remove();
-          toast(
-            "Een foto kon niet worden geladen. Vernieuw het album of log opnieuw in.",
-          );
-        }
-      }
-    };
-    albumObserver = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries)
-          if (entry.isIntersecting) {
-            albumObserver.unobserve(entry.target);
-            load(entry.target);
-          }
-      },
-      { rootMargin: "100px" },
-    );
-    $("albumContent")
-      .querySelectorAll("img[data-photo]")
-      .forEach((image) => albumObserver.observe(image));
-  }
+      renderChallenge();
+      go("spelen");
+      toast("Team gemaakt. Jullie kunnen beginnen!");
+    });
+  });
   function renderAlbum() {
     const chosen = $("albumTeam").value,
-      visible = teams.filter((team) => !chosen || chosen === team.id);
-    $("albumContent").innerHTML = !session
-      ? '<div class="empty">Log in bij Teams om je besloten teamalbums te openen.</div>'
-      : !visible.length
-        ? '<div class="empty">Maak een team of vul een uitnodigingscode in bij Teams.</div>'
-        : visible
-            .map((team) => {
-              const rows = photos.filter((photo) => photo.team_id === team.id);
-              return `<section class="album-group"><div class="album-heading"><div><h2>${esc(team.name)}</h2><p class="hint">${rows.length} foto’s · ${rows.reduce((total, photo) => total + photo.points, 0)} punten</p></div>${rows.length ? `<button class="text-button" data-download-team="${team.id}">Download album ↓</button>` : ""}</div>${rows.length ? `<div class="gallery-grid">${rows.map((photo) => `<button class="gallery-item" data-photo-open="${photo.id}"><img data-photo="${photo.id}" alt="${esc(byId.get(photo.challenge_id)?.title || "Teamfoto")}" loading="lazy"><span class="caption">${esc(byId.get(photo.challenge_id)?.title || "Teamfoto")}<small>${photo.points} punten · ${new Date(photo.created_at).toLocaleDateString("nl-NL")}</small></span></button>`).join("")}</div>` : '<p class="empty">Nog geen foto’s. Kies een opdracht bij Spelen en bewaar jullie eerste foto.</p>'}</section>`;
-            })
-            .join("");
+      visible = teams.filter((t) => !chosen || t.id === chosen);
+    $("albumContent").innerHTML = visible
+      .map((team) => {
+        const rows = photos.filter((p) => p.team_id === team.id);
+        return `<section class="album-group"><div class="album-heading"><div><h2>${esc(team.name)}</h2><p class="hint">${rows.length} foto’s · ${rows.reduce((n, p) => n + p.points, 0)} punten</p></div>${rows.length ? `<button class="text-button" data-export-team="${esc(team.id)}">ZIP ↓</button>` : ""}</div>${rows.length ? `<div class="gallery-grid">${rows.map((p) => `<button class="gallery-item" data-photo-open="${esc(p.id)}"><img src="${esc(photoURL(p))}" loading="lazy" alt="${esc(byId.get(p.challenge_id)?.title || "Teamfoto")}"><span class="caption">${esc(byId.get(p.challenge_id)?.title || "Teamfoto")}<small>${p.points} punten · ${new Date(p.created_at).toLocaleDateString("nl-NL")}</small></span></button>`).join("")}</div>` : '<p class="empty">Nog geen foto’s. Kies een opdracht bij Spelen en bewaar jullie eerste foto.</p>'}</section>`;
+      })
+      .join("");
     $("albumContent")
       .querySelectorAll("[data-photo-open]")
-      .forEach((button) =>
-        button.addEventListener("click", () =>
-          busy(button, () =>
-            openPhoto(
-              photos.find((photo) => photo.id === button.dataset.photoOpen),
-            ),
-          ),
+      .forEach((b) =>
+        b.addEventListener("click", () =>
+          openPhoto(photos.find((p) => p.id === b.dataset.photoOpen)),
         ),
       );
     $("albumContent")
-      .querySelectorAll("[data-download-team]")
-      .forEach((button) =>
-        button.addEventListener("click", () =>
-          busy(button, () => downloadAlbum(button.dataset.downloadTeam)),
+      .querySelectorAll("[data-export-team]")
+      .forEach((b) =>
+        b.addEventListener("click", () =>
+          busy(b, () => exportZIP(b.dataset.exportTeam)),
         ),
       );
-    observeAlbum();
-    $("legacySection").hidden = !legacyPhotos.length;
-    $("legacyGrid").innerHTML = legacyPhotos
-      .map(
-        (photo) =>
-          `<button class="gallery-item" data-legacy="${esc(photo.id)}"><img src="${esc(photo.url)}" alt="${esc(byId.get(photo.challenge_id)?.title || "Eerdere foto")}" loading="lazy"><span class="caption">${esc(byId.get(photo.challenge_id)?.title || "Eerdere foto")}<small>Alleen op dit apparaat</small></span></button>`,
-      )
-      .join("");
-    $("legacyGrid")
-      .querySelectorAll("[data-legacy]")
-      .forEach((button) =>
-        button.addEventListener("click", () =>
-          busy(button, () =>
-            openPhoto(
-              legacyPhotos.find((photo) => photo.id === button.dataset.legacy),
-            ),
-          ),
-        ),
-      );
+    updateSaveButton();
   }
   $("albumTeam").addEventListener("change", renderAlbum);
-  $("refreshAlbum").addEventListener("click", () =>
-    busy($("refreshAlbum"), refreshCloud),
-  );
-  async function openPhoto(photo) {
+  $("refreshAlbum").addEventListener("click", renderAlbum);
+  function openPhoto(photo) {
     if (!photo) return;
-    const url = await photoURL(photo),
-      item = byId.get(photo.challenge_id);
     currentPhoto = photo;
+    const item = byId.get(photo.challenge_id),
+      original = originalURL(photo);
     $("photoTitle").textContent = item?.title || "Teamfoto";
-    const original = item && referenceURL(item);
     $("photoView").innerHTML =
-      `<div class="comparison">${original ? `<figure><figcaption>HET ORIGINEEL</figcaption><img src="${esc(original)}" alt="${esc(item.title)}"></figure>` : ""}<figure><figcaption>JULLIE VERSIE</figcaption><img src="${esc(url)}" alt="Jullie nagemaakte foto"></figure></div>`;
+      `<div class="comparison"><figure><figcaption>HET ORIGINEEL</figcaption>${original ? `<img src="${esc(original)}" alt="${esc(item?.title)}">` : '<p class="hint">Geen origineel meegeleverd. De ZIP bevat de titel en zoeklink.</p>'}</figure><figure><figcaption>JULLIE VERSIE</figcaption><img src="${esc(photoURL(photo))}" alt="Jullie nagemaakte foto"></figure></div>`;
     $("downloadPhoto").hidden = false;
-    $("deletePhoto").hidden = !(
-      photo.legacy ||
-      photo.owner_id === session?.user.id ||
-      teams.find((team) => team.id === photo.team_id)?.owner_id ===
-        session?.user.id
-    );
+    $("deletePhoto").hidden = false;
     showDialog("photoDialog");
   }
   function download(blob, name) {
     const url = URL.createObjectURL(blob),
-      link = document.createElement("a");
-    link.href = url;
-    link.download = name;
-    document.body.append(link);
-    link.click();
-    link.remove();
+      a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.append(a);
+    a.click();
+    a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
-  $("downloadPhoto").addEventListener("click", () =>
-    busy($("downloadPhoto"), async () => {
-      const photo = currentPhoto;
-      if (!photo || photo.reference) return;
-      const blob = photo.legacy
-        ? photo.blob
-        : check(
-            await client.storage
-              .from("team-photos")
-              .download(photo.object_path),
-          );
+  const extension = (blob) =>
+    blob.type === "image/webp"
+      ? "webp"
+      : blob.type === "image/png"
+        ? "png"
+        : "jpg";
+  const filename = (value) =>
+    String(value)
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9_-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 70) || "foto";
+  $("downloadPhoto").addEventListener("click", () => {
+    if (currentPhoto && !currentPhoto.reference)
       download(
-        blob,
-        "fotojacht-" +
-          photo.challenge_id +
-          (photo.legacy ? "." + (blob.type.split("/")[1] || "jpg") : ".jpg"),
+        currentPhoto.blob,
+        filename(byId.get(currentPhoto.challenge_id)?.title) +
+          "-" +
+          currentPhoto.id.slice(-8) +
+          "." +
+          extension(currentPhoto.blob),
       );
-    }),
-  );
+  });
   $("deletePhoto").addEventListener("click", () =>
     busy($("deletePhoto"), async () => {
       const photo = currentPhoto;
       if (
         !photo ||
         photo.reference ||
-        !confirm("Deze foto definitief verwijderen?")
+        !confirm("Deze foto definitief van dit apparaat verwijderen?")
       )
         return;
-      if (photo.legacy) {
-        await localWrite(photo.id, null);
-        URL.revokeObjectURL(photo.url);
-        legacyPhotos.splice(legacyPhotos.indexOf(photo), 1);
-      } else {
-        check(
-          await client.storage.from("team-photos").remove([photo.object_path]),
-        );
-        check(await client.from("photos").delete().eq("id", photo.id));
-        if (media.has(photo.id)) URL.revokeObjectURL(media.get(photo.id));
-        media.delete(photo.id);
-        photos = photos.filter((row) => row.id !== photo.id);
-      }
+      await writeRecords(["photos"], (tx) =>
+        tx.objectStore("photos").delete(photo.id),
+      );
+      photos = photos.filter((p) => p.id !== photo.id);
+      for (const key of [photo.id, photo.id + ":original"])
+        if (media.has(key)) {
+          URL.revokeObjectURL(media.get(key));
+          media.delete(key);
+        }
       closeDialog("photoDialog");
       renderAlbum();
-      renderChallenge();
       renderAccount();
+      renderChallenge();
       toast("Foto verwijderd.");
     }),
   );
-  function asDataURL(blob) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
-  async function downloadAlbum(teamId) {
-    const team = teams.find((row) => row.id === teamId),
-      rows = photos.filter((row) => row.team_id === teamId);
-    if (!team) return;
-    toast("Je album wordt klaargemaakt. Houd deze pagina open.");
-    const epoch = cloudEpoch;
-    const cards = [];
-    for (const photo of rows) {
-      if (epoch !== cloudEpoch || !session) throw new Error("Session changed");
-      const blob = check(
-        await client.storage.from("team-photos").download(photo.object_path),
-      );
-      cards.push(
-        `<figure><img src="${await asDataURL(blob)}" alt="${esc(byId.get(photo.challenge_id)?.title || "Teamfoto")}"><figcaption>${esc(byId.get(photo.challenge_id)?.title || "Teamfoto")} · ${photo.points} punten</figcaption></figure>`,
-      );
-    }
-    if (epoch !== cloudEpoch || !session) return;
-    const html = `<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'"><title>FOTOJACHT — ${esc(team.name)}</title><style>body{margin:30px;background:#151813;color:#f3f4e9;font:16px system-ui}h1{color:#e5f58d}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}figure{margin:0}img{width:100%;max-height:65vh;object-fit:contain;background:#0a1007}figcaption{padding:12px 0}</style><h1>FOTOJACHT — ${esc(team.name)}</h1><p>${rows.length} foto’s · Privékopie: deel dit bestand alleen met je groep.</p><main>${cards.join("")}</main></html>`;
-    download(
-      new Blob([html], { type: "text/html;charset=utf-8" }),
-      "fotojacht-" + team.name.replace(/[^a-z0-9-]/gi, "-") + ".html",
-    );
-    toast("Album gedownload. Bewaar je privékopie veilig.");
-  }
   $("takePhoto").addEventListener("click", () => {
-    if (!session || !activeTeam()) return;
-    const context = {
+    if (!storageReady || !activeTeam()) return;
+    $("photoPicker")._context = {
       teamId: prefs.teamId,
       challengeId: current().id,
-      userId: session.user.id,
+      reference: referenceURL(current()),
     };
-    $("photoPicker")._context = context;
     $("photoPicker").click();
   });
   $("photoPicker").addEventListener("change", async (event) => {
     const file = event.target.files?.[0],
       context = event.target._context;
     event.target.value = "";
-    if (!file || !context || !session) return;
+    if (!file || !context) return;
     try {
       const blob = await prepareImage(file);
-      if (
-        session?.user.id !== context.userId ||
-        !teams.some((team) => team.id === context.teamId)
-      )
-        return;
-      pendingPhoto = { ...context, blob, url: URL.createObjectURL(blob) };
+      let referenceBlob = null;
+      if (context.reference) {
+        try {
+          const response = await fetch(context.reference);
+          if (response.ok) referenceBlob = await response.blob();
+        } catch {}
+      }
+      pendingPhoto = {
+        ...context,
+        blob,
+        referenceBlob,
+        url: URL.createObjectURL(blob),
+      };
       $("uploadPreview").src = pendingPhoto.url;
       $("uploadCaption").textContent =
-        teams.find((team) => team.id === context.teamId).name +
+        (teams.find((t) => t.id === context.teamId)?.name || "Team") +
         " · " +
         byId.get(context.challengeId).title;
-      $("uploadMessage").textContent = "";
+      $("uploadMessage").textContent = referenceBlob
+        ? "Origineel wordt mee bewaard voor de vergelijking."
+        : "Geen origineel beschikbaar: de ZIP krijgt de titel en een zoeklink.";
       $("photoPoints").value = "5";
       showDialog("uploadDialog");
     } catch {
       toast(
-        "Foto kon niet worden geopend. Probeer een JPEG of een kleinere foto (max. 20 MB).",
+        "Foto kon niet worden geopend. Kies een JPEG of kleinere foto (max. 20 MB).",
       );
     }
   });
   $("savePhoto").addEventListener("click", () =>
     busy($("savePhoto"), async () => {
-      const photo = pendingPhoto,
+      const pending = pendingPhoto,
         points = Number($("photoPoints").value);
-      if (
-        !photo ||
-        !client ||
-        session?.user.id !== photo.userId ||
-        !Number.isInteger(points) ||
-        points < 0 ||
-        points > 10
-      )
+      if (!pending || !Number.isInteger(points) || points < 0 || points > 10)
         return;
-      $("uploadMessage").textContent = "Bezig met privé opslaan…";
-      $("uploadDialog").querySelector("[data-close]").disabled = true;
-      const id = crypto.randomUUID(),
-        path = photo.teamId + "/" + photo.userId + "/" + id + ".jpg";
+      const button = $("uploadDialog").querySelector("[data-close]");
+      button.disabled = true;
       try {
-        check(
-          await client.storage.from("team-photos").upload(path, photo.blob, {
-            contentType: "image/jpeg",
-            cacheControl: "0",
-            upsert: false,
-          }),
-        );
-        const result = await client.from("photos").insert({
-          id,
-          team_id: photo.teamId,
-          owner_id: photo.userId,
-          challenge_id: photo.challengeId,
-          object_path: path,
+        const photo = {
+          id: crypto.randomUUID(),
+          team_id: pending.teamId,
+          challenge_id: pending.challengeId,
+          blob: pending.blob,
+          referenceBlob: pending.referenceBlob,
           points,
-        });
-        if (result.error) {
-          await client.storage.from("team-photos").remove([path]);
-          throw result.error;
-        }
+          created_at: new Date().toISOString(),
+        };
+        await writeRecords(["photos"], (tx) =>
+          tx.objectStore("photos").put(photo),
+        );
+        photos.push(photo);
         closeDialog("uploadDialog");
         resetTimer();
-        await refreshCloud();
-        toast("Bewaard in jullie besloten teamalbum.");
+        renderAccount();
+        renderAlbum();
         next(1);
+        toast("Foto bewaard op deze telefoon.");
+        // Ask for durable browser storage only after the first user-initiated save.
+        navigator.storage?.persist?.().catch(() => {});
       } catch (error) {
         $("uploadMessage").textContent =
           "Niet opgeslagen. Probeer opnieuw; je foto staat nog in dit venster.";
         throw error;
       } finally {
-        $("uploadDialog").querySelector("[data-close]").disabled = false;
+        button.disabled = false;
       }
     }),
   );
-  // Prevent dismissing the upload dialog halfway through a write.
   $("uploadDialog").addEventListener("cancel", (event) => {
     if ($("savePhoto").disabled) event.preventDefault();
   });
-  $("authForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!client) return;
-    busy($("signIn"), async () => {
-      check(
-        await client.auth.signInWithPassword({
-          email: $("email").value.trim(),
-          password: $("password").value,
-        }),
-      );
-      $("password").value = "";
-      $("authMessage").textContent =
-        "Ingelogd. Maak een team of vul je uitnodiging in.";
-    });
-  });
-  $("signUp").addEventListener("click", () => {
-    if (!client || !$("authForm").reportValidity()) return;
-    busy($("signUp"), async () => {
-      const result = check(
-        await client.auth.signUp({
-          email: $("email").value.trim(),
-          password: $("password").value,
-          options: { emailRedirectTo: location.origin + location.pathname },
-        }),
-      );
-      $("password").value = "";
-      $("authMessage").textContent = result.session
-        ? "Account gemaakt."
-        : "Controleer je e-mail om je account te bevestigen. Log daarna hier in.";
-    });
-  });
-  $("resetPassword").addEventListener("click", () => {
-    if (!client || !$("email").reportValidity()) return;
-    busy($("resetPassword"), async () => {
-      check(
-        await client.auth.resetPasswordForEmail($("email").value.trim(), {
-          redirectTo: location.origin + location.pathname,
-        }),
-      );
-      $("authMessage").textContent =
-        "Als dit account bestaat, ontvang je een herstelmail.";
-    });
-  });
-  $("recoveryForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    busy($("recoveryForm").querySelector("button"), async () => {
-      check(await client.auth.updateUser({ password: $("newPassword").value }));
-      $("newPassword").value = "";
-      closeDialog("recoveryDialog");
-      toast("Wachtwoord bijgewerkt.");
-    });
-  });
-  $("signOut").addEventListener("click", () =>
-    busy($("signOut"), async () => {
-      check(await client.auth.signOut({ scope: "local" }));
-      session = null;
-      clearCloud();
-      $("password").value = "";
-      toast("Uitgelogd. Teamfoto’s zijn van dit scherm verwijderd.");
-    }),
-  );
-  $("createTeamForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!session) return;
-    busy($("createTeamForm").querySelector("button"), async () => {
-      const team = check(
-        await client.rpc("create_team", { p_name: $("teamName").value.trim() }),
-      );
-      prefs.teamId = team.id;
-      persist();
-      $("teamName").value = "";
-      await refreshCloud();
-      toast("Team gemaakt. Nodig je teamgenoten uit.");
-    });
-  });
-  $("joinTeamForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!session) return;
-    busy($("joinTeamForm").querySelector("button"), async () => {
-      const result = check(
-        await client.rpc("join_team", {
-          p_code: $("inviteCode").value.trim().toLowerCase(),
-        }),
-      );
-      if (result.error) {
-        toast(result.error);
-        return;
-      }
-      prefs.teamId = result.id;
-      persist();
-      $("inviteCode").value = "";
-      await refreshCloud();
-      toast("Je bent lid van het team.");
-    });
-  });
-  async function listMembers(teamId) {
-    const members = check(
-      await client
-        .from("team_members")
-        .select("user_id,display_name")
-        .eq("team_id", teamId),
-    );
-    if (teamId !== inviteTeamId) return;
-    $("memberList").innerHTML = members
-      .map(
-        (member) =>
-          `<div class="member-row"><span>${esc(member.display_name)}${member.user_id === session.user.id ? " (jij)" : ""}</span>${member.user_id !== session.user.id ? `<button class="text-button danger" data-remove-member="${member.user_id}">Verwijder lid</button>` : ""}</div>`,
-      )
-      .join("");
-    $("memberList")
-      .querySelectorAll("[data-remove-member]")
-      .forEach((button) =>
-        button.addEventListener("click", () =>
-          busy(button, async () => {
-            if (!confirm("Dit lid de toegang tot het teamalbum ontnemen?"))
-              return;
-            check(
-              await client.rpc("remove_team_member", {
-                p_team: teamId,
-                p_user: button.dataset.removeMember,
-              }),
-            );
-            await listMembers(teamId);
-            toast(
-              "Lid verwijderd. Gedownloade kopieën kun je niet terughalen.",
-            );
-          }),
-        ),
-      );
+  async function imageFromBlob(blob) {
+    const url = URL.createObjectURL(blob),
+      image = new Image();
+    try {
+      image.src = url;
+      await image.decode();
+      return image;
+    } finally {
+      URL.revokeObjectURL(url);
+    }
   }
-  async function openInvite(teamId) {
-    const code = check(
-      await client.rpc("rotate_team_invite", { p_team: teamId }),
-    );
-    inviteTeamId = teamId;
-    $("inviteTitle").textContent =
-      "Uitnodigen: " + teams.find((team) => team.id === teamId).name;
-    $("generatedCode").textContent = code;
-    showDialog("inviteDialog");
-    await listMembers(teamId);
+  function drawContain(ctx, image, x, y, width, height) {
+    const scale = Math.min(
+        width / image.naturalWidth,
+        height / image.naturalHeight,
+      ),
+      w = image.naturalWidth * scale,
+      h = image.naturalHeight * scale;
+    ctx.drawImage(image, x + (width - w) / 2, y + (height - h) / 2, w, h);
   }
-  $("rotateInvite").addEventListener("click", () =>
-    busy($("rotateInvite"), async () => {
-      const code = check(
-        await client.rpc("rotate_team_invite", { p_team: inviteTeamId }),
-      );
-      $("generatedCode").textContent = code;
-      toast("Nieuwe code gemaakt. De vorige code werkt niet meer.");
-    }),
-  );
-  $("copyInvite").addEventListener("click", () =>
-    busy($("copyInvite"), async () => {
-      const code = $("generatedCode").textContent;
-      try {
-        await navigator.clipboard.writeText(code);
-        toast("Uitnodigingscode gekopieerd.");
-      } catch {
-        prompt("Kopieer deze uitnodigingscode:", code);
-      }
-    }),
-  );
-  async function initAuth() {
-    if (!configured) return;
-    client = window.FotojachtSupabase.createClient(
-      config.url,
-      config.publishableKey,
-      {
-        global: {
-          fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
-        },
-        auth: {
-          storage: sessionStorage,
-          storageKey: AUTH_KEY,
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          flowType: "pkce",
-        },
-      },
+  async function comparisonBlob(photo, reference, teamName) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1600;
+    canvas.height = 1050;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#151813";
+    ctx.fillRect(0, 0, 1600, 1050);
+    ctx.fillStyle = "#e5f58d";
+    ctx.font = "bold 36px system-ui";
+    ctx.fillText("FOTOJACHT — " + teamName, 40, 56, 1520);
+    ctx.fillStyle = "#f3f4e9";
+    ctx.font = "26px system-ui";
+    ctx.fillText(
+      byId.get(photo.challenge_id)?.title || photo.challenge_id,
+      40,
+      102,
+      1520,
     );
-    client.auth.onAuthStateChange((event, newSession) => {
-      const previousUser = session?.user.id;
-      session = newSession;
-      // Database calls must run outside the SDK's auth callback lock.
-      setTimeout(async () => {
-        try {
-          if (!session || (previousUser && previousUser !== session.user.id))
-            clearCloud();
-          if (session) await refreshCloud();
-          else renderAccount();
-          if (event === "PASSWORD_RECOVERY") showDialog("recoveryDialog");
-        } catch (error) {
-          toast(friendly(error));
+    ctx.fillStyle = "#b0b6a7";
+    ctx.font = "20px system-ui";
+    ctx.fillText("HET ORIGINEEL", 40, 152);
+    ctx.fillText("JULLIE VERSIE", 820, 152);
+    if (reference) {
+      const image = await imageFromBlob(reference);
+      drawContain(ctx, image, 40, 175, 740, 800);
+    } else {
+      ctx.fillText("Geen origineel beschikbaar.", 60, 500);
+      ctx.fillText("Zie referentie.txt voor titel en zoeklink.", 60, 535);
+    }
+    const own = await imageFromBlob(photo.blob);
+    drawContain(ctx, own, 820, 175, 740, 800);
+    ctx.fillStyle = "#b0b6a7";
+    ctx.font = "18px system-ui";
+    ctx.fillText(
+      photo.points +
+        " punten · " +
+        new Date(photo.created_at).toLocaleString("nl-NL"),
+      40,
+      1015,
+    );
+    return new Promise((resolve, reject) =>
+      canvas.toBlob(
+        (blob) =>
+          blob ? resolve(blob) : reject(new Error("Vergelijking mislukt")),
+        "image/jpeg",
+        0.86,
+      ),
+    );
+  }
+  async function exportZIP(teamId = "") {
+    if (exporting) return;
+    const rows = photos.filter((p) => !teamId || p.team_id === teamId);
+    if (!rows.length) {
+      toast("Er zijn nog geen foto’s om te downloaden.");
+      return;
+    }
+    exporting = true;
+    updateSaveButton();
+    const files = {},
+      cards = [],
+      manifest = [],
+      snapshotTeams = teams.map((t) => ({ ...t }));
+    try {
+      for (let index = 0; index < rows.length; index++) {
+        $("exportStatus").textContent =
+          `ZIP klaarmaken: ${index + 1} van ${rows.length} foto’s…`;
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        const photo = rows[index],
+          item = byId.get(photo.challenge_id),
+          team = snapshotTeams.find((t) => t.id === photo.team_id),
+          teamName = team?.name || "Team";
+        const folder =
+          "Teams/" +
+          filename(teamName) +
+          "-" +
+          photo.team_id.slice(-8) +
+          "/" +
+          filename(item?.title || photo.challenge_id) +
+          "-" +
+          photo.challenge_id +
+          "-" +
+          photo.id.slice(-8) +
+          "/";
+        const ownPath = folder + "jullie-foto." + extension(photo.blob);
+        files[ownPath] = [
+          new Uint8Array(await photo.blob.arrayBuffer()),
+          { level: 0 },
+        ];
+        let reference = photo.referenceBlob;
+        if (!reference && item && referenceURL(item)) {
+          try {
+            const response = await fetch(referenceURL(item));
+            if (response.ok) reference = await response.blob();
+          } catch {}
         }
-      }, 0);
-    });
-    const result = await client.auth.getSession();
-    session = result.data?.session || null;
-    renderAccount();
+        let originalPath = "";
+        if (reference) {
+          originalPath = folder + "origineel." + extension(reference);
+          files[originalPath] = [
+            new Uint8Array(await reference.arrayBuffer()),
+            { level: 0 },
+          ];
+        }
+        const comparePath = folder + "vergelijking.jpg";
+        files[comparePath] = [
+          new Uint8Array(
+            await (
+              await comparisonBlob(photo, reference, teamName)
+            ).arrayBuffer(),
+          ),
+          { level: 0 },
+        ];
+        const note = `FOTOJACHT\nTeam: ${teamName}\nTitel: ${item?.title || photo.challenge_id}\nOpdracht: ${photo.challenge_id}\nPunten: ${photo.points}\nGemaakt: ${photo.created_at}\nBeschrijving: ${item?.description || ""}\nOrigineel: ${reference ? "In deze map" : "Niet meegeleverd"}\nZoeklink: ${item ? searchURL(item) : ""}\nBron: ${item?.source || "Eigen voorbeeld of zoekreferentie"}\n`;
+        files[folder + "referentie.txt"] = fflate.strToU8(note);
+        manifest.push({
+          team: teamName,
+          title: item?.title || photo.challenge_id,
+          challengeId: photo.challenge_id,
+          points: photo.points,
+          createdAt: photo.created_at,
+          photo: ownPath,
+          original: originalPath || null,
+          comparison: comparePath,
+        });
+        cards.push(
+          `<figure><a href="${esc(comparePath)}"><img src="${esc(comparePath)}" alt="${esc(item?.title)}" loading="lazy"></a><figcaption><b>${esc(teamName)} — ${esc(item?.title || photo.challenge_id)}</b><p>${photo.points} punten · <a href="${esc(ownPath)}">Jullie foto</a>${originalPath ? ` · <a href="${esc(originalPath)}">Origineel</a>` : ` · <a href="${esc(item ? searchURL(item) : "#")}">Zoek origineel ↗</a>`}</p></figcaption></figure>`,
+        );
+      }
+      files["album.html"] = fflate.strToU8(
+        `<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none';img-src 'self' data:;style-src 'unsafe-inline'"><title>FOTOJACHT — jullie album</title><style>body{font:16px system-ui;background:#151813;color:#f3f4e9;margin:24px}h1,a{color:#e5f58d}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}figure{margin:0}img{width:100%;display:block;border-radius:12px}figcaption{padding:12px 0}</style><h1>FOTOJACHT — jullie album</h1><p>${rows.length} foto’s. Deze bestanden zijn privé: deel ze alleen met je groep.</p><main>${cards.join("")}</main></html>`,
+      );
+      files["overzicht.json"] = fflate.strToU8(
+        JSON.stringify(manifest, null, 2),
+      );
+      files["LEES-MIJ.txt"] = fflate.strToU8(
+        "FOTOJACHT\nPak deze ZIP eerst uit. Open daarna album.html om alle foto’s met titels en vergelijkingen te bekijken.\nElke teammap bevat jullie foto’s, beschikbare originelen, vergelijking.jpg en referentie.txt.\nFoto’s zijn alleen afkomstig van dit apparaat. Geen synchronisatie met andere telefoons.\nBewaar deze privékopie veilig.\n",
+      );
+      const bytes = fflate.zipSync(files, { level: 0 });
+      download(
+        new Blob([bytes], { type: "application/zip" }),
+        "FOTOJACHT-" +
+          (teamId
+            ? filename(
+                snapshotTeams.find((t) => t.id === teamId)?.name || "team",
+              )
+            : "alle-teams") +
+          "-" +
+          new Date().toISOString().slice(0, 10) +
+          ".zip",
+      );
+      $("exportStatus").textContent =
+        "ZIP klaar. Open Downloads / Bestanden en pak de ZIP uit. Open daarna album.html.";
+      toast("ZIP gedownload. Je foto’s blijven ook op deze telefoon bewaard.");
+    } catch (error) {
+      $("exportStatus").textContent =
+        "ZIP niet voltooid. Probeer per team te downloaden; je foto’s blijven bewaard.";
+      throw error;
+    } finally {
+      exporting = false;
+      updateSaveButton();
+    }
   }
+  $("downloadAll").addEventListener("click", () =>
+    busy($("downloadAll"), () => exportZIP()),
+  );
   route();
   renderAccount();
   renderChallenge();
   drawTimer();
   loadLocal();
-  initAuth().catch(() =>
-    toast("Inloggen kon niet worden geladen. Probeer de pagina opnieuw."),
-  );
-  // Cache public application assets only. The service worker never handles Supabase.
   if (
     "serviceWorker" in navigator &&
     (location.protocol === "https:" ||
-      location.hostname === "127.0.0.1" ||
-      location.hostname === "localhost")
+      ["127.0.0.1", "localhost"].includes(location.hostname))
   )
     navigator.serviceWorker.register("./sw.js").catch(() => {});
 })();

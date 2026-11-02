@@ -1,46 +1,44 @@
-# FOTOJACHT
+# FOTOJACHT — v5
 
-Kies een foto. Maak hem samen na. Bewaar jullie herinneringen per team.
+**Live:** https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/
 
-This branch simplifies the previous interface to three tabs: **Spelen**, **Fotoalbum**, **Teams**. The live `main` branch has the separate social-preview fix; this private-team redesign is not ready for live shared uploads until its Supabase project is connected and verified.
+Een simpele fotochallenge: **Spelen → Fotoalbum → Teams**. Geen account, backend of cloudopslag. Alle 145 bestaande opdrachten zijn ongewijzigd beschikbaar. De standaard fotokiezer toont de 11 lokale referenties; schakel **Ook opdrachten met zoeklink** in voor de overige scènes. Copyrightbeelden worden niet zonder toestemming meegeleverd. Je kunt een eigen toegestaan voorbeeld lokaal toevoegen.
 
-## Simple flow
+## In één minuut starten
 
-1. Browse without an account. The default challenge and picker use the 11 locally included reference images so pictures actually appear in the site. All 145 challenges remain unchanged and available through **Ook opdrachten met zoeklink**; copyrighted scenes still have a specific external search option instead of an unauthorized image. A permitted custom reference may be saved only on the current phone.
-2. Sign in, create a team or enter a private invitation code. Every participant uses their own account. The organiser automatically belongs to each team they create.
-3. Pick a challenge, optionally start the timer, then make/choose your recreated photo. Confirm the team and points before uploading.
-4. View the gallery grouped by team, compare a recreation with its locally available original, and download individual photos or an entire self-contained HTML team album. Only the uploader or owner can delete a photo.
+1. Er staat meteen een team **Mijn team** klaar. Verander de naam of voeg teams toe bij **Teams**.
+2. Kies een foto en maak de pose na. De timer is optioneel.
+3. Kies **Maak of kies jullie foto**, bekijk de preview, geef punten en kies **Bewaar op deze telefoon**.
+4. Tik bij **Fotoalbum** op **Download alle foto’s als ZIP**, of kies de ZIP-knop naast één team.
 
-## Photo privacy
+De ZIP bevat per team en opdracht een map met:
 
-**Never save participant photos in this public repository.** Cookies cannot store an album. Private shared photos require authentication and server-enforced access rules, provided here by Supabase Auth, PostgreSQL row-level security and a private Storage bucket.
+- jullie foto met de passende opdrachttitel in het mappad;
+- het opgeslagen origineel, als dat beschikbaar is;
+- **vergelijking.jpg** met titel, team en origineel naast jullie foto;
+- **referentie.txt** met beschrijving, titel, bron en zoeklink;
+- daarnaast **album.html** voor het uitgepakte album, **overzicht.json** en **LEES-MIJ.txt**.
 
-`config.js` is intentionally blank: uploads/sign-in are disabled until the backend is configured. Connect Supabase or follow [backend/README.md](backend/README.md) to activate and test the service. No private photo service has been deployed or verified yet. No service-role/secret key belongs in the frontend.
+Ontbreekt het origineel, dan toont de vergelijking dat expliciet en staat er een zoeklink bij. Nieuwe foto's bewaren een kopie van het beschikbare voorbeeld zodat de vergelijking niet verandert als je later een ander voorbeeld kiest. Pak de ZIP uit in Bestanden/Downloads. De losse vergelijking-JPG's werken ook als je telefoon het HTML-album niet volledig toont.
 
-New photo files are converted to JPEG, stripped of the original EXIF/GPS metadata, and reduced to 1800px before a confirmed upload. Photo downloads require team membership. Temporary photo URLs are kept in memory and revoked on sign-out; the service worker never caches private photo requests. Team members can download copies, so share team invitations only with the group. This is private provider-managed storage, not end-to-end encryption.
+## Belangrijk voor vanavond
 
-Existing photos from the old site are retained locally in an **Eerdere foto's op deze telefoon** album. They are not automatically uploaded or assigned to a team. Old scores/preferences remain under their original browser key, but are not silently imported into the shared service.
+- **Foto's blijven uitsluitend in deze browser op deze telefoon.** Er is geen synchronisatie tussen telefoons. Iedere telefoon downloadt zijn eigen ZIP; deel die daarna zelf met de organisator.
+- Cookies zijn veel te klein voor foto's. De app gebruikt **IndexedDB** voor foto's/teams en **localStorage** voor voorkeuren, timer en favorieten. Er worden geen foto’s naar GitHub of een server verstuurd.
+- Gebruik geen privémodus. Browsergegevens wissen of opslagopruiming kan de foto's verwijderen. Download de ZIP na het spel als back-up. Iedereen die deze browser kan gebruiken, kan het lokale album openen: het is geen met een wachtwoord beveiligde kluis.
+- Foto's worden maximaal 1800px groot als JPEG opgeslagen; oorspronkelijke EXIF/GPS-metadata wordt niet overgenomen. De camera-/fotobibliotheekkiezer is van de telefoon zelf.
+- Foto's uit de eerdere site blijven behouden en worden in een lokaal team **Eerdere foto's** gezet. Ze worden niet geüpload.
 
-## Local development
-
-No runtime build step is needed:
+## Ontwikkeling en publicatie
 
 ```sh
-python3 -m http.server 8767 --bind 127.0.0.1
+python3 -m http.server 8769 --bind 127.0.0.1
 node scripts/verify.mjs
-# open http://127.0.0.1:8767/
+python3 scripts/browser-smoke.py
 ```
 
-The vendored Supabase JS client (v2.118.0, MIT license in `vendor/`) is local; no CDN scripts are required. `scripts/build-vendor.sh` documents how it was bundled. Browser test details and limits are in [TESTING.md](TESTING.md).
+HTML, CSS en JavaScript; geen build nodig. ZIP's worden lokaal gemaakt met de gebundelde MIT-library fflate v0.8.2 (`vendor/FFLATE-LICENSE.txt`). Alleen openbare site-assets gaan naar GitHub Pages; de service worker bewaart geen persoonlijke foto's.
 
-## Reference images
+Elke push naar **main** wordt gecontroleerd en direct via GitHub Actions gepubliceerd. Open de site opnieuw of vernieuw om de nieuwste versie te laden; de header toont **v5**. De Open Graph/Twitter metadata en de 1200×630 social preview zijn behouden.
 
-[assets/references/sources.json](assets/references/sources.json) lists the 11 included public-domain works and NASA photograph, authors, source pages and conversions. They are genuine references, not AI substitutes. Other copyrighted scenes retain a targeted search link. The independent `assets/og-image.png` is an original generated branding illustration for link previews, not a challenge reference.
-
-## GitHub Pages and social previews
-
-The public site is https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/ . The workflow validates site files and private-access SQL, then deploys static assets on pushes to `main`. Pull requests validate without deploying.
-
-Social metadata lives directly in `index.html`, so crawlers do not need JavaScript. Open Graph and Twitter Cards use the absolute 1200×630 `assets/og-image.png` URL. WhatsApp, Discord, iMessage and other services may retain an earlier preview until their cache refreshes.
-
-Original ZIP backup: `original-zip` (`08462d6`). Previous complete interface backup: `before-simple-teams-2026-11-02` (`74db494`). The social-only change is commit `670a38e`; it changes only `index.html` metadata and the new preview asset.
+Bronnen van de lokale referenties: [assets/references/sources.json](assets/references/sources.json). Herstelpunten: `original-zip` en `before-simple-teams-2026-11-02`. De eerdere Supabase-opzet is vervallen; deze versie vereist geen verbinding of accounts. Validatie: [TESTING.md](TESTING.md).

@@ -10,39 +10,7 @@ concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  verify:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-      - name: Validate library, site and social metadata
-        run: node scripts/verify.mjs
-      - name: Test private team access rules against PostgreSQL
-        env:
-          PGHOST: localhost
-          PGPORT: "5432"
-          PGUSER: postgres
-        run: |
-          psql -v ON_ERROR_STOP=1 -f backend/test-bootstrap.sql
-          psql -v ON_ERROR_STOP=1 -f backend/schema.sql
-          psql -v ON_ERROR_STOP=1 -f backend/test-access.sql
   deploy:
-    needs: verify
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -53,14 +21,23 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify app, library and social preview
+        run: node scripts/verify.mjs
       - uses: actions/configure-pages@v5
+        if: github.ref == 'refs/heads/main'
       - name: Prepare static site
+        if: github.ref == 'refs/heads/main'
         run: |
           mkdir _site
-          cp index.html styles.css app.js challenges.js manifest.webmanifest sw.js config.js README.md _site/
+          cp index.html styles.css app.js challenges.js manifest.webmanifest sw.js README.md _site/
           cp -R assets vendor _site/
       - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
         with:
           path: _site
       - id: deployment
+        if: github.ref == 'refs/heads/main'
         uses: actions/deploy-pages@v4

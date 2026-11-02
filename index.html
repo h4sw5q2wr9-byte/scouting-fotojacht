@@ -9,20 +9,19 @@
     <meta name="theme-color" content="#151813" />
     <meta
       name="description"
-      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen in een besloten teamalbum."
+      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen op je eigen telefoon."
     />
     <meta name="referrer" content="no-referrer" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' ; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
     <title>FOTOJACHT</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
     <script src="challenges.js" defer></script>
-    <script src="vendor/supabase.js" defer></script>
-    <script src="config.js" defer></script>
+    <script src="vendor/fflate.js" defer></script>
     <script src="app.js" defer></script>
     <!-- Social link previews: absolute HTTPS URLs for messaging crawlers. -->
     <link
@@ -74,8 +73,9 @@
   <body>
     <header class="header">
       <a class="brand" href="#spelen"
-        ><img src="assets/icon.svg" width="30" height="30" alt="" />FOTOJACHT</a
-      ><button id="accountButton" class="text-button">Inloggen</button>
+        ><img src="assets/icon.svg" width="30" height="30" alt="" />FOTOJACHT
+        <small class="version">v5</small></a
+      ><button id="accountButton" class="text-button">Mijn teams</button>
     </header>
     <main>
       <section id="playPage" class="page">
@@ -135,7 +135,7 @@
           ＋ Maak of kies jullie foto
         </button>
         <p id="saveHint" class="hint">
-          Log in en kies een team om foto’s privé te delen.
+          Foto’s blijven op deze telefoon. Download na afloop jullie ZIP.
         </p>
         <div class="next-row">
           <button id="previous" class="text-button">← Vorige</button
@@ -169,31 +169,28 @@
         ><select id="albumTeam" class="wide">
           <option value="">Alle mijn teams</option>
         </select>
+        <button id="downloadAll" class="primary wide">
+          ↓ Download alle foto’s als ZIP
+        </button>
         <p class="hint">
-          Alleen leden van een team kunnen dat teamalbum openen. Je ziet hier je
-          eigen teams.
+          Alleen op deze telefoon opgeslagen. De ZIP bevat teammappen, titels,
+          beschikbare originelen en vergelijkingen. Download vóór je
+          browsergegevens wist.
         </p>
+        <p id="exportStatus" role="status" class="hint"></p>
         <div id="albumContent"></div>
-        <div id="legacySection" hidden>
-          <h2>Eerdere foto’s op deze telefoon</h2>
-          <p class="hint">
-            Deze oude foto’s zijn nog niet gedeeld of aan een team gekoppeld.
-            Download ze om ze te bewaren.
-          </p>
-          <div id="legacyGrid" class="gallery-grid"></div>
-        </div>
         <details class="quiet-details">
           <summary>Waar worden foto’s bewaard?</summary>
           <p>
-            Nieuwe teamfoto’s gaan naar een privéopslag met inloggen en
-            toegangsregels. Ze komen nooit in de openbare GitHub-repository.
-            Teamleden kunnen beelden bekijken en downloaden; deel uitnodigingen
-            dus alleen met je groep.
+            Foto’s staan in de browseropslag op deze telefoon, niet online of in
+            GitHub. Cookies zijn te klein voor foto’s. Iedereen met toegang tot
+            deze browser kan dit album openen. Geen synchronisatie tussen
+            telefoons.
           </p>
           <p>
-            Cookies slaan geen foto’s op. De website onthoudt je voorkeuren op
-            dit apparaat; je aanmelding blijft alleen in deze browsersessie
-            bewaard. Gedownloade foto’s en albums bewaar je zelf.
+            Gebruik geen privémodus. Opslag kan verdwijnen als je
+            browsergegevens wist of de browser ruimte vrijmaakt. Download na het
+            spel de ZIP en bewaar die veilig.
           </p>
         </details>
       </section>
@@ -204,81 +201,29 @@
             <h1>Jullie teams.</h1>
           </div>
         </div>
-        <div id="connectionNotice" class="notice" hidden>
-          <h2>Privé delen wordt klaargezet</h2>
-          <p>
-            Rondkijken en spelen kan al. Inloggen en foto’s delen komen
-            beschikbaar zodra de privéopslag is aangesloten. Foto’s uploaden
-            staat tot die tijd uit.
-          </p>
+        <p class="hint">
+          Teams en foto’s blijven op dit apparaat. Op een andere telefoon maak
+          je daar zelf een team en download je daar de ZIP.
+        </p>
+        <div id="storageNotice" class="notice" hidden>
+          Opslag is niet beschikbaar. Foto’s kunnen nu niet bewaard worden. Open
+          de site in een normale browser en probeer opnieuw.
         </div>
-        <section id="authPanel" class="panel" hidden>
-          <h2>Log in voor je teamalbum</h2>
-          <p>Gebruik je eigen account. Deel geen wachtwoorden.</p>
-          <form id="authForm">
-            <label for="email">E-mailadres</label
-            ><input
-              id="email"
-              type="email"
-              autocomplete="email"
-              required
-              maxlength="254"
-            /><label for="password">Wachtwoord</label
-            ><input
-              id="password"
-              type="password"
-              autocomplete="current-password"
-              minlength="8"
-              required
-            /><button type="submit" class="primary wide" id="signIn">
-              Inloggen
-            </button>
-            <div class="split">
-              <button type="button" id="signUp" class="text-button">
-                Nieuw account maken</button
-              ><button type="button" id="resetPassword" class="text-button">
-                Wachtwoord vergeten
-              </button>
-            </div>
-            <p id="authMessage" role="status" class="hint"></p>
-          </form>
-        </section>
-        <section id="signedInPanel" hidden>
-          <p class="account-line">
-            <span id="accountEmail"></span
-            ><button id="signOut" class="text-button">Uitloggen</button>
-          </p>
-          <div id="teamList"></div>
-          <div class="panel">
-            <h2>Maak een team</h2>
-            <form id="createTeamForm">
-              <label class="sr-only" for="teamName">Teamnaam</label>
-              <div class="input-row">
-                <input
-                  id="teamName"
-                  maxlength="40"
-                  placeholder="Bijvoorbeeld: De Vossen"
-                  required
-                /><button class="primary" type="submit">Maak team</button>
-              </div>
-            </form>
-          </div>
-          <div class="panel">
-            <h2>Doe mee met een team</h2>
-            <form id="joinTeamForm">
-              <label for="inviteCode">Uitnodigingscode van je teamleider</label
-              ><input
-                id="inviteCode"
-                type="text"
-                autocomplete="off"
-                autocapitalize="none"
-                spellcheck="false"
+        <div id="teamList"></div>
+        <div class="panel">
+          <h2>Maak een team</h2>
+          <form id="createTeamForm">
+            <label class="sr-only" for="teamName">Teamnaam</label>
+            <div class="input-row">
+              <input
+                id="teamName"
+                maxlength="40"
+                placeholder="Bijvoorbeeld: De Vossen"
                 required
-                maxlength="48"
-              /><button class="secondary wide" type="submit">Word lid</button>
-            </form>
-          </div>
-        </section>
+              /><button class="primary" type="submit">Maak team</button>
+            </div>
+          </form>
+        </div>
       </section>
     </main>
     <nav class="bottom-nav" aria-label="Hoofdnavigatie">
@@ -344,8 +289,8 @@
         <img id="uploadPreview" class="preview" alt="Jullie gekozen foto" />
         <p id="uploadCaption"></p>
         <p class="hint">
-          Alleen leden van dit team krijgen toegang. Locatiegegevens worden uit
-          het opgeslagen bestand verwijderd.
+          Blijft op deze telefoon, zonder upload. Locatiegegevens worden uit het
+          opgeslagen bestand verwijderd.
         </p>
         <label for="photoPoints">Punten voor deze foto</label
         ><select id="photoPoints">
@@ -361,7 +306,7 @@
           <option value="9">9 punten</option>
           <option value="10">10 punten</option></select
         ><button id="savePhoto" class="primary wide">
-          Bewaar privé in het teamalbum
+          Bewaar op deze telefoon
         </button>
         <p id="uploadMessage" class="hint" role="status"></p>
       </div>
@@ -386,48 +331,6 @@
           </button>
         </div>
       </div>
-    </dialog>
-    <dialog id="inviteDialog">
-      <div class="dialog-header">
-        <h2 id="inviteTitle">Team uitnodigen</h2>
-        <button
-          class="icon-button"
-          data-close="inviteDialog"
-          aria-label="Sluiten"
-        >
-          ✕
-        </button>
-      </div>
-      <div class="dialog-body">
-        <p>
-          Laat teamgenoten inloggen en deze code invullen bij Teams. De code is
-          24 uur geldig.
-        </p>
-        <output id="generatedCode" class="invite-code"></output
-        ><button id="copyInvite" class="secondary wide">Kopieer code</button>
-        <p class="hint">
-          Iedereen met deze code kan na inloggen lid worden. Een nieuwe code
-          maakt de vorige ongeldig.
-        </p>
-        <button id="rotateInvite" class="text-button">
-          Maak een nieuwe code
-        </button>
-        <h3>Teamleden</h3>
-        <div id="memberList"></div>
-      </div>
-    </dialog>
-    <dialog id="recoveryDialog">
-      <div class="dialog-header"><h2>Nieuw wachtwoord</h2></div>
-      <form id="recoveryForm" class="dialog-body">
-        <label for="newPassword">Minimaal 8 tekens</label
-        ><input
-          type="password"
-          id="newPassword"
-          autocomplete="new-password"
-          minlength="8"
-          required
-        /><button type="submit" class="primary wide">Bewaar wachtwoord</button>
-      </form>
     </dialog>
     <input type="file" id="photoPicker" accept="image/*" hidden />
     <input type="file" id="referencePicker" accept="image/*" hidden />

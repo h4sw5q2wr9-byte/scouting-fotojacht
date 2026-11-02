@@ -1,4 +1,4 @@
-const NAME = "fotojacht-simple-v4.0.0";
+const NAME = "fotojacht-local-v5.0.0";
 // Strict allowlist: no auth requests, storage downloads, personal photos or blobs.
 const CORE = [
   "./",
@@ -6,8 +6,7 @@ const CORE = [
   "./styles.css",
   "./app.js",
   "./challenges.js",
-  "./config.js",
-  "./vendor/supabase.js",
+  "./vendor/fflate.js",
   "./manifest.webmanifest",
   "./assets/icon.svg",
 ];

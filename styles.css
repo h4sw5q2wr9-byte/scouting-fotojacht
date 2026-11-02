@@ -800,3 +800,17 @@ dialog::backdrop {
 .reference > .reference-message p {
   max-width: 280px;
 }
+.version {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 4px;
+}
+#downloadAll {
+  margin-top: 14px;
+}
+#exportStatus:not(:empty) {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
