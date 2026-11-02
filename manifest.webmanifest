@@ -1,7 +1,7 @@
 {
-  "name": "FOTOJACHT V2 — Maak het na",
+  "name": "FOTOJACHT — Maak het na",
   "short_name": "FOTOJACHT",
-  "description": "Grappige foto-opdrachten voor 1–4 personen. Meestal samen, altijd lokaal bewaard.",
+  "description": "Grappige foto-opdrachten voor jullie groep. Foto’s blijven op je telefoon.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

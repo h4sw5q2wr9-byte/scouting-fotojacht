@@ -41,7 +41,8 @@
     pending = null,
     viewed = null,
     exporting = false,
-    dbPromise;
+    dbPromise,
+    preparedZIP = null;
   const esc = (value) =>
     String(value ?? "").replace(
       /[&<>"']/g,
@@ -206,6 +207,7 @@
       `${item.people || item.players} ${item.players === 1 ? "persoon" : "personen"} · ${item.difficulty}`;
     $("reference").alt = item.title;
     $("reference").dataset.challenge = item.id;
+    $("reference").srcset = item.previewImage || "";
     $("reference").src = item.image;
     const done = saved.has(item.id);
     $("doneBadge").hidden = !done;
@@ -218,6 +220,7 @@
     syncButtons();
   }
   $("reference").addEventListener("error", () => {
+    if ($("reference").srcset) { $("reference").srcset = ""; return; }
     const id = $("reference").dataset.challenge;
     failed.add(id);
     $("imageError").hidden = false;
@@ -279,7 +282,7 @@
       items
         .map(
           (item) =>
-            `<button class="picker-card" data-pick="${item.id}"><img src="${item.image}" alt="${esc(item.title)}" loading="lazy">${saved.has(item.id) ? '<b class="done-dot">✓</b>' : ""}<span class="caption">${esc(item.title)}<small>${item.people || item.players} ${item.players === 1 ? "persoon" : "personen"} · ${esc(item.difficulty)}</small></span></button>`,
+            `<button class="picker-card" data-pick="${item.id}"><img src="${item.image}" srcset="${item.previewImage || ""}" alt="${esc(item.title)}" loading="lazy">${saved.has(item.id) ? '<b class="done-dot">✓</b>' : ""}<span class="caption">${esc(item.title)}<small>${item.people || item.players} ${item.players === 1 ? "persoon" : "personen"} · ${esc(item.difficulty)}</small></span></button>`,
         )
         .join("") ||
       '<p class="hint">Geen kaarten voor deze selectie. Kies een ander aantal spelers of een andere categorie.</p>';
@@ -298,11 +301,13 @@
         image.addEventListener(
           "error",
           () => {
+            if (image.srcset) { image.srcset = ""; return; }
             const id = image.closest("[data-pick]").dataset.pick;
             failed.add(id);
             image.closest("button").remove();
           },
-          { once: true },
+          // Retry the original JPEG if its optimized copy is unavailable.
+          { once: false },
         ),
       );
   }
@@ -543,10 +548,19 @@
     $("comparison").innerHTML =
       `<figure><figcaption>HET ORIGINEEL</figcaption>${original ? `<img src="${esc(original)}" alt="${esc(item.title)}">` : '<p class="hint">Bij deze eerdere foto is geen origineel bewaard.</p>'}</figure><figure><figcaption>JULLIE VERSIE</figcaption><img src="${esc(blobURL(photo.id, photo.blob))}" alt="Jullie versie van ${esc(item.title)}"></figure>`;
     $("photoActions").hidden = false;
+    $("bestPose").setAttribute("aria-pressed", String(prefs.bestPose === photo.id));
+    $("bestPose").textContent = prefs.bestPose === photo.id ? "★ Jullie beste pose" : "☆ Kies als beste pose";
     $("replacePhoto").hidden = !byId.has(photo.challenge_id);
     $("continuePlaying").hidden = !byId.has(photo.challenge_id);
     openDialog("viewerDialog");
   }
+  $("bestPose").addEventListener("click", () => {
+    if (!viewed) return;
+    prefs.bestPose = prefs.bestPose === viewed.id ? null : viewed.id;
+    persist();
+    renderAlbum();
+    openComparison(viewed);
+  });
   $("compareCurrent").addEventListener("click", () => {
     const photo = saved.get(current()?.id);
     if (photo) openComparison(photo);
@@ -600,9 +614,11 @@
   );
   function albumCard(photo) {
     const item = itemFor(photo);
-    return `<button class="album-card" data-photo="${esc(photo.id)}"><img src="${esc(blobURL(photo.id, photo.blob))}" alt="Jullie versie van ${esc(item.title)}" loading="lazy"><span class="caption">${esc(item.title)}<small>✓ Bewaard · tik om te vergelijken</small></span></button>`;
+    return `<button class="album-card" data-photo="${esc(photo.id)}"><img src="${esc(blobURL(photo.id, photo.blob))}" alt="Jullie versie van ${esc(item.title)}" loading="lazy"><span class="caption">${esc(item.title)}<small>${prefs.bestPose === photo.id ? "★ Beste pose · " : "✓ Bewaard · "}tik om te vergelijken</small></span></button>`;
   }
   function renderAlbum() {
+    preparedZIP = null;
+    $("shareZip").hidden = true;
     const photos = [...saved.values()].sort((a, b) =>
       b.created_at.localeCompare(a.created_at),
     );
@@ -625,6 +641,8 @@
   }
   $("groupName").value = prefs.groupName;
   $("groupName").addEventListener("input", () => {
+    preparedZIP = null;
+    $("shareZip").hidden = true;
     prefs.groupName = $("groupName").value.slice(0, 40);
     persist();
   });
@@ -720,6 +738,8 @@
       toast("Bewaar eerst een foto.");
       return;
     }
+    preparedZIP = null;
+    $("shareZip").hidden = true;
     exporting = true;
     syncButtons();
     const files = {},
@@ -770,11 +790,14 @@
           licenseUrl: item.licenseUrl || "",
           modifications:
             item.modifications || "Reference snapshot saved on this device",
+          referenceLicenseAppliesTo: "Original reference and adaptations of it; independent recreation photo retains its own rights",
         };
         credits.push(credit);
+        files["originals/" + slug + "-credits.txt"] = fflate.strToU8([credit.title, credit.author, credit.source_page, credit.license, credit.licenseUrl, credit.modifications, credit.referenceLicenseAppliesTo].join("\n"));
         results.push({
           title: item.title,
           challengeId: photo.challenge_id,
+          bestPose: prefs.bestPose === photo.id,
           group: prefs.groupName.trim() || "Onze groep",
           createdAt: photo.created_at,
           photo: photoPath,
@@ -783,9 +806,11 @@
           credit,
         });
         cards.push(
-          `<figure><a href="${esc(comparisonPath)}"><img src="${esc(comparisonPath)}" loading="lazy" alt="Vergelijking: ${esc(item.title)}"></a><figcaption><b>${esc(item.title)}</b><p><a href="${esc(photoPath)}">Jullie foto</a>${originalPath ? ` · <a href="${esc(originalPath)}">Origineel</a>` : ""}</p><small>${esc(credit.author)} · ${esc(credit.license)}</small></figcaption></figure>`,
+          `<figure><a href="${esc(comparisonPath)}"><img src="${esc(comparisonPath)}" loading="lazy" alt="Vergelijking: ${esc(item.title)}"></a><figcaption><b>${esc(item.title)}</b><p><a href="${esc(photoPath)}">Jullie foto</a>${originalPath ? ` · <a href="${esc(originalPath)}">Origineel</a>` : ""}</p><small>${esc(credit.author)} · <a href="${esc(credit.licenseUrl)}">${esc(credit.license)}</a> · <a href="${esc(credit.source_page)}">Bron</a><br>${esc(credit.modifications)} · Origineel en bewerkingen behouden deze licentie; eigen foto heeft afzonderlijke rechten.</small></figcaption></figure>`,
         );
       }
+      files["docs/user-reference-uploads.md"] = fflate.strToU8("User-supplied reference images. Copyright retained by original creators / respective rights holders. No independent redistribution license verified. These images are not CC or public domain. See credits.json for titles and original creators.\n");
+      files["LICENTIES.txt"] = fflate.strToU8("Referentiebeelden behouden de licentie in credits.json en originals/*-credits.txt. Geef maker, bron, licentielink en bewerkingen mee bij delen. CC BY-SA-bewerkingen van een referentie blijven onder de vermelde CC BY-SA-licentie. De vergelijking is een verzameling van twee afzonderlijke beelden: de eigen recreatiefoto behoudt eigen rechten. Geen algemene vrije licentie geldt voor aangeleverde memes.\n");
       files["results.json"] = fflate.strToU8(JSON.stringify(results, null, 2));
       files["credits.json"] = fflate.strToU8(JSON.stringify(credits, null, 2));
       files["index.html"] = fflate.strToU8(
@@ -794,15 +819,11 @@
       files["LEES-MIJ.txt"] = fflate.strToU8(
         "FOTOJACHT V2\nPak deze ZIP uit. In photos/ staan jullie foto’s met leesbare titels. comparisons/ bevat de vergelijkingen. Open index.html voor het album. results.json bevat het overzicht en credits.json de bronnen en licenties van de originelen.\nDe licenties bij referentiebeelden gelden voor die beelden; jullie eigen foto’s houden hun eigen auteursrechten. Deze ZIP wordt niet door de site online gezet. Deel hem alleen met toestemming van de mensen op de foto’s.\n",
       );
-      download(
-        new Blob([fflate.zipSync(files, { level: 0 })], {
-          type: "application/zip",
-        }),
-        "FOTOJACHT-" +
-          name(prefs.groupName || "Onze groep") +
-          (legacy ? "-eerdere-fotos" : "") +
-          ".zip",
-      );
+      const zipBlob = new Blob([fflate.zipSync(files, { level: 0 })], { type: "application/zip" });
+      const filename = "FOTOJACHT-" + name(prefs.groupName || "Onze groep") + (legacy ? "-eerdere-fotos" : "") + ".zip";
+      preparedZIP = new File([zipBlob], filename, { type: "application/zip" });
+      try { $("shareZip").hidden = !(navigator.share && navigator.canShare?.({ files: [preparedZIP] })); } catch { $("shareZip").hidden = true; }
+      download(zipBlob, filename);
       $("exportStatus").textContent =
         "ZIP klaar! Kijk in Downloads / Bestanden, pak de ZIP uit en open index.html of de losse foto’s.";
       toast("ZIP gedownload. Je foto’s blijven ook hier bewaard.");
@@ -815,6 +836,15 @@
       syncButtons();
     }
   }
+  $("shareZip").addEventListener("click", async () => {
+    if (!preparedZIP) return;
+    try {
+      await navigator.share({ files: [preparedZIP], title: "FOTOJACHT — " + (prefs.groupName || "Onze groep") });
+      $("exportStatus").textContent = "ZIP gedeeld via de gekozen app.";
+    } catch (error) {
+      $("exportStatus").textContent = error.name === "AbortError" ? "Delen geannuleerd. De ZIP staat ook in Downloads / Bestanden." : "Delen lukt hier niet. Gebruik de gedownloade ZIP in Downloads / Bestanden.";
+    }
+  });
   $("downloadZip").addEventListener("click", () =>
     busy($("downloadZip"), () => exportZIP()),
   );

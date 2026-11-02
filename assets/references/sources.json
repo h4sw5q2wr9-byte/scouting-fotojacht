@@ -23,7 +23,9 @@
       "sourceFile": "1-Photo-1.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "cb049cae2cc08c4bf9d52f793c4e1cd6376d8e28d759b2831a85af0daf801656"
+      "sha256": "cb049cae2cc08c4bf9d52f793c4e1cd6376d8e28d759b2831a85af0daf801656",
+      "previewImage": "assets/references/woman-yelling-at-cat.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-home-alone-scream",
@@ -46,7 +48,9 @@
       "sourceFile": "2-Photo-2.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "4432172a67fa0a41619f60b2d539db8dc164d7fbf02f1bf52293708917752bd1"
+      "sha256": "4432172a67fa0a41619f60b2d539db8dc164d7fbf02f1bf52293708917752bd1",
+      "previewImage": "assets/references/home-alone-scream.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-spider-man-pointing",
@@ -69,7 +73,9 @@
       "sourceFile": "3-Photo-3.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "6825956d34ca9bd7683e13d09fb367d3f1cd0ffca06621fab378ea11d45cdf85"
+      "sha256": "6825956d34ca9bd7683e13d09fb367d3f1cd0ffca06621fab378ea11d45cdf85",
+      "previewImage": "assets/references/spider-man-pointing.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-distracted-boyfriend",
@@ -92,7 +98,9 @@
       "sourceFile": "4-Photo-4.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "3c5764ccc4526318a0f8c257ce89deeb0ee2eef2f59066720b246ba0291245b8"
+      "sha256": "3c5764ccc4526318a0f8c257ce89deeb0ee2eef2f59066720b246ba0291245b8",
+      "previewImage": "assets/references/distracted-boyfriend.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-flynn-rider-smoulder",
@@ -115,7 +123,9 @@
       "sourceFile": "5-Photo-5.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "7e1421749d3b14ce5632a056d73a1461196b695d5f8265f2d7fe0821557f52ed"
+      "sha256": "7e1421749d3b14ce5632a056d73a1461196b695d5f8265f2d7fe0821557f52ed",
+      "previewImage": "assets/references/flynn-rider-smoulder.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-get-out-reaction",
@@ -138,7 +148,9 @@
       "sourceFile": "6-Photo-6.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "4c2a74d71cc962f983f87a460711d234c46ef06ab4c46bc1be767462c2776d57"
+      "sha256": "4c2a74d71cc962f983f87a460711d234c46ef06ab4c46bc1be767462c2776d57",
+      "previewImage": "assets/references/get-out-reaction.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-up-cloud-watching",
@@ -161,7 +173,9 @@
       "sourceFile": "7-Photo-7.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "57917e52d39bad338e966a4656fa1f25dc857c269a3c44afd86846812c5ba53e"
+      "sha256": "57917e52d39bad338e966a4656fa1f25dc857c269a3c44afd86846812c5ba53e",
+      "previewImage": "assets/references/up-cloud-watching.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-invisible-kick",
@@ -184,7 +198,9 @@
       "sourceFile": "8-Photo-8.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "ad277e0cb0b1de730f5e29ec9711cf626665f26ab109c7e514912772b8d404df"
+      "sha256": "ad277e0cb0b1de730f5e29ec9711cf626665f26ab109c7e514912772b8d404df",
+      "previewImage": "assets/references/invisible-kick.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-chaotic-group-selfie",
@@ -207,7 +223,9 @@
       "sourceFile": "9-Photo-9.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "f3281f2c1d0805a8a07ff13b0e09346e0512a1b450bfe84b6e3381147d0ea2e7"
+      "sha256": "f3281f2c1d0805a8a07ff13b0e09346e0512a1b450bfe84b6e3381147d0ea2e7",
+      "previewImage": "assets/references/chaotic-group-selfie.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "user-meme-many-arms-team",
@@ -230,7 +248,9 @@
       "sourceFile": "10-Photo-10.jpg",
       "modifications": "Exact user-provided image, copied without edits",
       "userProvided": true,
-      "sha256": "8e67180063d37126d5aaa9f6d65619c4c11702eb98d2025aeef7b34a56ee23ef"
+      "sha256": "8e67180063d37126d5aaa9f6d65619c4c11702eb98d2025aeef7b34a56ee23ef",
+      "previewImage": "assets/references/many-arms-team.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-1282cf5c66",
@@ -241,7 +261,7 @@
       "image": "assets/references/de-mislukte-fusion-dance.jpg",
       "author": "Kyle Nishioka",
       "license": "CC BY 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
       "source": "https://commons.wikimedia.org/wiki/File:Costaku_2011_-_Soul_Eater_Fusion_Dance_Cosplay.jpg",
       "sourceFile": "Costaku 2011 - Soul Eater Fusion Dance Cosplay.jpg",
       "modifications": "Resized to maximum 1400×1200; JPEG encoded; no pose edits",
@@ -251,7 +271,9 @@
       "maxPlayers": 2,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Costaku_2011_-_Soul_Eater_Fusion_Dance_Cosplay.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Costaku_2011_-_Soul_Eater_Fusion_Dance_Cosplay.jpg",
+      "previewImage": "assets/references/de-mislukte-fusion-dance.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-2b3618d8c5",
@@ -262,7 +284,7 @@
       "image": "assets/references/charlie-s-angels.jpg",
       "author": "Joe Loong",
       "license": "CC BY-SA 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
       "source": "https://commons.wikimedia.org/wiki/File:Charlie%27s_Angels_pose.jpg",
       "sourceFile": "Charlie's Angels pose.jpg",
       "modifications": "Resized to maximum 1400×1200; JPEG encoded; no pose edits",
@@ -272,7 +294,9 @@
       "maxPlayers": 3,
       "difficulty": "Gemiddeld",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Charlie%27s_Angels_pose.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Charlie%27s_Angels_pose.jpg",
+      "previewImage": "assets/references/charlie-s-angels.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-7d1b125e2a",
@@ -283,7 +307,7 @@
       "image": "assets/references/drie-wijze-apen.jpg",
       "author": "Paul Williams",
       "license": "CC BY-SA 2.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
       "source": "https://commons.wikimedia.org/wiki/File:K-15_reklama.jpg",
       "sourceFile": "K-15 reklama.jpg",
       "modifications": "Resized to maximum 1400×1200; JPEG encoded; no pose edits",
@@ -293,7 +317,9 @@
       "maxPlayers": 3,
       "difficulty": "Gemiddeld",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:K-15_reklama.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:K-15_reklama.jpg",
+      "previewImage": "assets/references/drie-wijze-apen.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-7066f4042e",
@@ -314,7 +340,9 @@
       "maxPlayers": 4,
       "difficulty": "Gemiddeld",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Abdel_Fattah_el-Sisi%2C_King_Salman_of_Saudi_Arabia%2C_Melania_Trump%2C_and_Donald_Trump%2C_May_2017.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Abdel_Fattah_el-Sisi%2C_King_Salman_of_Saudi_Arabia%2C_Melania_Trump%2C_and_Donald_Trump%2C_May_2017.jpg",
+      "previewImage": "assets/references/de-mysterieuze-bol.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-12df099172",
@@ -335,7 +363,9 @@
       "difficulty": "Makkelijk",
       "source_page": "https://commons.wikimedia.org/wiki/File:Barack_Obama_with_artistic_gymnastic_McKayla_Maroney_2.jpg",
       "status": "ready",
-      "maxPlayers": 2
+      "maxPlayers": 2,
+      "previewImage": "assets/references/not-impressed.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-fb5fd3dc1f",
@@ -356,7 +386,9 @@
       "difficulty": "Makkelijk",
       "source_page": "https://commons.wikimedia.org/wiki/File:Barack_Obama_with_Spider-Man.jpg",
       "status": "ready",
-      "maxPlayers": 2
+      "maxPlayers": 2,
+      "previewImage": "assets/references/spider-man-vangt-obama.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-467512ee0c",
@@ -377,7 +409,9 @@
       "maxPlayers": 2,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:The_Flying_Deuces_%281939%29_1.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:The_Flying_Deuces_%281939%29_1.jpg",
+      "previewImage": "assets/references/twee-breinen-nul-plan.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-d386998957",
@@ -398,7 +432,9 @@
       "maxPlayers": 4,
       "difficulty": "Gemiddeld",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Lucille_Ball_Vivian_Vance_The_Lucy_Show_1963.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Lucille_Ball_Vivian_Vance_The_Lucy_Show_1963.jpg",
+      "previewImage": "assets/references/dit-was-niet-het-plan.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-f080445d03",
@@ -419,7 +455,9 @@
       "maxPlayers": 2,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Vivian_Vance_Lucille_Ball_The_Lucy_Show_1963.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Vivian_Vance_Lucille_Ball_The_Lucy_Show_1963.jpg",
+      "previewImage": "assets/references/wanneer-het-helemaal-misgaat.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-5adcbdb55b",
@@ -440,7 +478,9 @@
       "maxPlayers": 4,
       "difficulty": "Gemiddeld",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Marx_Brothers_1931.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Marx_Brothers_1931.jpg",
+      "previewImage": "assets/references/vier-types-nul-verstand.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-abce4309b9",
@@ -461,7 +501,9 @@
       "maxPlayers": 3,
       "difficulty": "Gemiddeld",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Three_Stooges_1959.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Three_Stooges_1959.jpg",
+      "previewImage": "assets/references/three-stooges-chaosfoto.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-b164acaf75",
@@ -482,7 +524,9 @@
       "maxPlayers": 3,
       "difficulty": "Gemiddeld",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Burt_Ward_Adam_West_Maurice_Evans_Batman_1966.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Burt_Ward_Adam_West_Maurice_Evans_Batman_1966.jpg",
+      "previewImage": "assets/references/op-heterdaad-betrapt.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-ca1128e797",
@@ -503,7 +547,9 @@
       "maxPlayers": 2,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Carolyn_Jones_John_Astin_The_Addams_Family_1964.JPG"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Carolyn_Jones_John_Astin_The_Addams_Family_1964.JPG",
+      "previewImage": "assets/references/de-familie-op-visite.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-00cc404276",
@@ -512,9 +558,9 @@
       "people": "2",
       "description": "Eén iemand hangt als Samson over een leuning, de ander zit als Gert eigenwijs op de rand. Gebruik een witte sok als hondenkop of speel de hond zelf.",
       "image": "assets/references/dag-meneer-de-burgemeester.jpg",
-      "author": "Fun4life at Dutch Wikipedia",
+      "author": "Fun4life",
       "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "source": "https://commons.wikimedia.org/wiki/File:Samson-Gert.jpg",
       "sourceFile": "Samson-Gert.jpg",
       "modifications": "Resized to maximum 1400×1200; JPEG encoded; no pose edits",
@@ -524,7 +570,10 @@
       "maxPlayers": 2,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Samson-Gert.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Samson-Gert.jpg",
+      "licenseVerification": "Commons file page checked 2026-11-02: CC BY-SA 3.0 Unported.",
+      "previewImage": "assets/references/dag-meneer-de-burgemeester.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-84715f89e0",
@@ -533,7 +582,7 @@
       "people": "4",
       "description": "Vier mensen: twee zijn per ongeluk als dezelfde clown gekomen en twee weten niet wat ze ermee moeten. Improviseer rode neuzen en maak de dubbelgangersfoto na.",
       "image": "assets/references/twee-bassies-te-veel.jpg",
-      "author": "Blom86 (Wikimedia Commons)",
+      "author": "Blom86",
       "license": "Public domain",
       "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
       "source": "https://commons.wikimedia.org/wiki/File:Bassie%2Cadriaan%2Cmilko%2Cronald.jpg",
@@ -545,7 +594,10 @@
       "maxPlayers": 4,
       "difficulty": "Gemiddeld",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Bassie%2Cadriaan%2Cmilko%2Cronald.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Bassie%2Cadriaan%2Cmilko%2Cronald.jpg",
+      "licenseVerification": "Commons file page checked 2026-11-02: public-domain dedication by Blom86 at Dutch Wikipedia.",
+      "previewImage": "assets/references/twee-bassies-te-veel.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-f72d62b8bb",
@@ -566,7 +618,9 @@
       "maxPlayers": 2,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Barack_Obama_plays_peek-a-boo_with_the_daughter_of_White_House_staffer_Emmett_Beliveau%2C_2009.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Barack_Obama_plays_peek-a-boo_with_the_daughter_of_White_House_staffer_Emmett_Beliveau%2C_2009.jpg",
+      "previewImage": "assets/references/kiekeboe-uit-de-hand-gelopen.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-c7fffbcb12",
@@ -587,7 +641,9 @@
       "maxPlayers": 3,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Trump_hand_shaking_with_Macron_at_G7_Biarritz_summit.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Trump_hand_shaking_with_Macron_at_G7_Biarritz_summit.jpg",
+      "previewImage": "assets/references/wanneer-niemand-loslaat.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-685f1d0d25",
@@ -598,7 +654,7 @@
       "image": "assets/references/cha-cha-cha-team3.jpg",
       "author": "Michael Doherty",
       "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "source": "https://commons.wikimedia.org/wiki/File:Eurovision_2023_-_Jury_Final_-_Finland_-_K%C3%A4%C3%A4rij%C3%A4_%2802%29.jpg",
       "sourceFile": "Eurovision 2023 - Jury Final - Finland - Käärijä (02).jpg",
       "modifications": "Cropped to the central three performers (excluding two outer dancers), JPEG encoded; no pose edits. Same CC BY-SA 4.0 license.",
@@ -608,7 +664,9 @@
       "difficulty": "Gemiddeld",
       "source_page": "https://commons.wikimedia.org/wiki/File:Eurovision_2023_-_Jury_Final_-_Finland_-_K%C3%A4%C3%A4rij%C3%A4_%2802%29.jpg",
       "status": "ready",
-      "maxPlayers": 3
+      "maxPlayers": 3,
+      "previewImage": "assets/references/cha-cha-cha-team3.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-3bdd693a2a",
@@ -619,7 +677,7 @@
       "image": "assets/references/joost-europapa.jpg",
       "author": "Wojciech Pędzich",
       "license": "CC BY 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "source": "https://commons.wikimedia.org/wiki/File:Joost_Klein%2C_semi-finals%2C_Eurovision_2024_05.jpg",
       "sourceFile": "Joost Klein, semi-finals, Eurovision 2024 05.jpg",
       "modifications": "Resized to maximum 1400×1200; JPEG encoded; no pose edits",
@@ -629,7 +687,9 @@
       "difficulty": "Makkelijk",
       "source_page": "https://commons.wikimedia.org/wiki/File:Joost_Klein%2C_semi-finals%2C_Eurovision_2024_05.jpg",
       "status": "ready",
-      "maxPlayers": 2
+      "maxPlayers": 2,
+      "previewImage": "assets/references/joost-europapa.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-035db78d25",
@@ -640,7 +700,7 @@
       "image": "assets/references/grumpy-cat.jpg",
       "author": "Gage Skidmore",
       "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "source": "https://commons.wikimedia.org/wiki/File:Grumpy_Cat_by_Gage_Skidmore.jpg",
       "sourceFile": "Grumpy Cat by Gage Skidmore.jpg",
       "modifications": "Resized to maximum 1400×1200; JPEG encoded; no pose edits",
@@ -650,7 +710,10 @@
       "difficulty": "Makkelijk",
       "source_page": "https://commons.wikimedia.org/wiki/File:Grumpy_Cat_by_Gage_Skidmore.jpg",
       "status": "ready",
-      "maxPlayers": 1
+      "maxPlayers": 1,
+      "licenseVerification": "Commons file page checked 2026-11-02: CC BY-SA 3.0 Unported.",
+      "previewImage": "assets/references/grumpy-cat.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-0004b45fd4",
@@ -671,7 +734,9 @@
       "difficulty": "Makkelijk",
       "source_page": "https://commons.wikimedia.org/wiki/File:Barack_Obama_Mic_Drop_2016.jpg",
       "status": "ready",
-      "maxPlayers": 1
+      "maxPlayers": 1,
+      "previewImage": "assets/references/obama-mic-drop.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-a6b5499cdf",
@@ -692,7 +757,9 @@
       "maxPlayers": 2,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Robin_and_Batman.JPG"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Robin_and_Batman.JPG",
+      "previewImage": "assets/references/batman-wie-bestuurt-dit-ding.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     },
     {
       "id": "deck-4c05d87a4c",
@@ -713,7 +780,9 @@
       "maxPlayers": 3,
       "difficulty": "Makkelijk",
       "status": "ready",
-      "source_page": "https://commons.wikimedia.org/wiki/File:Three_Stooges_1937.jpg"
+      "source_page": "https://commons.wikimedia.org/wiki/File:Three_Stooges_1937.jpg",
+      "previewImage": "assets/references/drie-koppen-n-plan.webp",
+      "previewModifications": "WebP display copy; no pose edits. Original JPEG preserved."
     }
   ]
 }

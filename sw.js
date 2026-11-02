@@ -1,4 +1,4 @@
-const NAME = "fotojacht-deck-v2.2.0";
+const NAME = "fotojacht-deck-v2.3.0";
 const CORE = [
   "./",
   "./index.html",
@@ -9,6 +9,7 @@ const CORE = [
   "./manifest.webmanifest",
   "./assets/icon.svg",
   "./credits.html",
+  "./docs/user-reference-uploads.md",
   "./assets/references/sources.json",
   "./archive/challenges-v1.json",
 ];
@@ -23,8 +24,10 @@ self.addEventListener("install", (event) =>
       const response = await cache.match("./assets/references/sources.json");
       const manifest = await response.json();
       // Preload the complete small deck: no remote originals or personal photos.
-      for (const item of manifest.items.filter((i) => i.status === "ready"))
+      for (const item of manifest.items.filter((i) => i.status === "ready")) {
         await cache.add("./" + item.image);
+        if (item.previewImage) await cache.add("./" + item.previewImage);
+      }
       await self.skipWaiting();
     })(),
   ),

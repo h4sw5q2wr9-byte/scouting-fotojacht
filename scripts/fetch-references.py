@@ -39,7 +39,7 @@ def get(row):
   if file.startswith('Barack Obama Mic'):author='The White House'
   if file.startswith('Buzz salutes'):author='Neil Armstrong / NASA'
   if not author or len(author)>300:author=author[:300] or 'See source page — needs review'
-  licenseURL='https://creativecommons.org/publicdomain/mark/1.0/' if license=='Public domain' else next(iter(re.findall(r'class="licensetpl_link"[^>]*>(https://creativecommons.org/[^<]+)</span>',page)),'')
+  licenseURL=('https://creativecommons.org/publicdomain/mark/1.0/' if license=='Public domain' else 'https://creativecommons.org/publicdomain/zero/1.0/' if license=='CC0' else 'https://creativecommons.org/licenses/'+('by-sa' if 'BY-SA' in license else 'by')+'/'+license.split()[-1]+'/')
   result=dict(id='deck-'+key,title=title,category=category,people=people,description=description,image=image,author=author,license=license,licenseUrl=licenseURL,source=source,sourceFile=file,modifications='Resized to maximum 1400×1200; JPEG encoded; no pose edits',imageType='photograph',enabled=True)
   print('OK',title,license,author[:110],im.size,flush=True);return result
  except Exception as error:print('FAILED',title,str(error),flush=True);return None

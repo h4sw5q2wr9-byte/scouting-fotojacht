@@ -46,6 +46,12 @@ for (const item of data) {
   const file = fs.readFileSync(item.image);
   assert.equal(file.readUInt16BE(0), 0xffd8);
   assert(file.length > 10000, `${item.id}: reference too small`);
+  assert(/^assets\/references\/[a-z0-9-]+\.webp$/.test(item.previewImage));
+  assert(fs.existsSync(item.previewImage));
+  if (item.license.startsWith("CC BY")) {
+    const kind = item.license.includes("BY-SA") ? "by-sa" : "by";
+    assert.equal(item.licenseUrl, `https://creativecommons.org/licenses/${kind}/${item.license.split(" ").at(-1)}/`);
+  }
   if (item.userProvided) {
     assert.equal(item.licenseUrl, "docs/user-reference-uploads.md");
     assert(fs.existsSync(item.licenseUrl));

@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#101014" />
     <meta
       name="description"
-      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen op je eigen telefoon. Grappige lokale foto’s voor 1–4 personen."
+      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen op je eigen telefoon. Grappige lokale foto’s voor jullie groep."
     />
     <meta name="referrer" content="no-referrer" />
     <meta
@@ -76,7 +76,7 @@
         >FOTO<span>JACHT</span><i aria-hidden="true">✶</i></a
       >
       <div class="header-tools">
-        <span class="edition">V2 / VANAVOND</span
+        <span class="edition">MAAK HET NA</span
         ><button id="help" class="icon-button" aria-label="Korte uitleg">
           ?
         </button>
@@ -145,6 +145,7 @@
           <p id="albumCount"></p>
         </div>
         <button id="downloadZip" class="primary wide">↓ Download ZIP</button>
+        <button id="shareZip" class="secondary wide" hidden>Deel ZIP…</button>
         <p id="exportStatus" class="hint" role="status"></p>
         <details class="group-options">
           <summary>Groepsnaam voor de ZIP (optioneel)</summary>
@@ -182,14 +183,14 @@
       </section>
       <footer>
         <span>Één groep. Eén telefoon. Heel veel slechte poses.</span
-        ><a href="credits.html">Fotocredits</a><span class="release">V2.2</span>
+        ><a href="credits.html">Fotocredits</a>
       </footer>
     </main>
     <nav class="bottom-nav" aria-label="Navigatie">
       <a href="#deck" data-page="deck" aria-current="page"
         >▣ <span>De kaarten</span></a
       ><a href="#album" data-page="album"
-        >▦ <span>Jullie foto’s <b id="albumBadge">0</b></span></a
+        >▦ <span aria-live="polite" aria-atomic="true">Jullie foto’s <b id="albumBadge">0</b></span></a
       >
     </nav>
     <dialog id="tutorialDialog">
@@ -308,6 +309,7 @@
       <div class="dialog-body">
         <div id="comparison" class="comparison"></div>
         <div id="photoActions" class="viewer-actions">
+          <button id="bestPose" class="secondary" aria-pressed="false">☆ Kies als beste pose</button>
           <button id="replacePhoto" class="secondary">Andere foto kiezen</button
           ><button id="deletePhoto" class="text-button">Verwijder foto</button>
         </div>

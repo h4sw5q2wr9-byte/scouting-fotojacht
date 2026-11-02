@@ -60,3 +60,15 @@ Herstelpunt vóór deze inhoudswijziging: `before-funny-teams-deck-2026-11-02` (
 
 ## Update V2.2
 Alle tien aangeleverde beelden zijn exact lokaal opgenomen (Woman yelling at cat, Home Alone, Spider-Man, Distracted Boyfriend, Flynn Rider, Get Out, Up, perspectieftrap, groepsselfie en vele armen), plus twee extra groepsreferenties van Batman en de Three Stooges. Er zijn 33 kaarten. Nieuwe zoekbalk en spelersfilters tot zeven personen. Alle recreaties blijven lokaal; ZIP via **Jullie foto’s → Download ZIP**. Herkomst en SHA256 van gebruikersuploads: `docs/user-reference-uploads.md`. Deze uploads zijn niet vrij gelicentieerd; auteursrechten blijven bij de oorspronkelijke rechthebbenden. Herstelpunt: `before-uploaded-memes-2026-11-02`.
+
+
+## Credits, offline en delen
+De CC-licentielinks worden automatisch tegen naam en versie gecontroleerd. Samson is CC BY-SA 3.0 (Fun4life), Grumpy Cat CC BY-SA 3.0 (Gage Skidmore); de Commons-bron van Bassie noemt een public-domain-toewijding door Blom86 (gecontroleerd 2 november 2026). De bronfoto’s behouden hun eigen licentie, inclusief share-alike voor bewerkingen van die beelden. Zelfgemaakte recreaties blijven afzonderlijke beelden met eigen rechten. De ZIP bevat zichtbare bron- en licentielinks, `credits.json`, `LICENTIES.txt` en een creditbestand per origineel. Gebruikersuploads zijn niet als vrij gelicentieerd aangemerkt.
+
+Na de eerste volledige online laadbeurt slaat de serviceworker het spel, alle JPEG-originelen en de WebP-weergavekopieën op voor offline gebruik. Houd de pagina de eerste keer even open; wis browseropslag niet vóór de ZIP-export. Privéfoto’s gaan alleen in IndexedDB, niet in de serviceworker-cache of repository. De WebP-weergavekopieën zijn samen 48% kleiner dan de JPEG’s; bij een ontbrekende WebP valt de kaart terug op JPEG.
+
+Klik **Download ZIP**. Als de browser bestandsdeling ondersteunt, verschijnt daarna **Deel ZIP…**; die opent op een nieuwe tik het deelmenu zodat de vereiste gebruikersactie op iPhone behouden blijft. Bij annuleren of ontbrekende ondersteuning blijft de gedownloade ZIP beschikbaar. Het spel kiest geen ontvanger en verstuurt niets automatisch.
+
+In een bewaarde vergelijking kun je **Kies als beste pose** aantikken. Eén favoriet wordt lokaal onthouden, in het album gemarkeerd en in `results.json` als `bestPose` opgenomen. Geen extra teams of scorebord. Ontwikkelversies zijn uit de zichtbare interface verwijderd. Het fotoaantal wordt bij wijziging aan schermlezers gemeld; icoonknoppen hebben tekstlabels.
+
+Extra controle: `python scripts/browser-sharing.py` (gemockt deelmenu; verstuurt niets). Herstelpunt vóór deze update: `before-credits-sharing-2026-11-02`.
