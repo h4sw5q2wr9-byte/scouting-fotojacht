@@ -6,10 +6,10 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#151813" />
+    <meta name="theme-color" content="#101014" />
     <meta
       name="description"
-      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen op je eigen telefoon."
+      content="Kies een foto. Maak hem samen na. Bewaar jullie herinneringen op je eigen telefoon. 25 echte foto’s, direct in de site."
     />
     <meta name="referrer" content="no-referrer" />
     <meta
@@ -72,211 +72,192 @@
   </head>
   <body>
     <header class="header">
-      <a class="brand" href="#spelen"
-        ><img src="assets/icon.svg" width="30" height="30" alt="" />FOTOJACHT
-        <small class="version">v5</small></a
-      ><button id="accountButton" class="text-button">Mijn teams</button>
+      <a class="brand" href="#deck" aria-label="Fotojacht"
+        >FOTO<span>JACHT</span><i aria-hidden="true">✶</i></a
+      >
+      <div class="header-tools">
+        <span class="edition">V2 / VANAVOND</span
+        ><button id="help" class="icon-button" aria-label="Korte uitleg">
+          ?
+        </button>
+      </div>
     </header>
     <main>
-      <section id="playPage" class="page">
-        <div class="page-heading">
-          <div>
-            <p class="eyebrow">SAMEN NAMAKEN</p>
-            <h1>Eén foto. Jullie versie.</h1>
+      <section id="deckPage">
+        <div class="intro">
+          <p class="eyebrow">DE SCOUTING FOTOCHALLENGE</p>
+          <h1>MAAK <em>’M NA.</em></h1>
+          <p>25 echte foto’s. Eén groep. Jullie versie.</p>
+        </div>
+        <div class="deck-toolbar">
+          <button id="browse" class="secondary">
+            ▦ Alle <span id="deckCount">25</span> kaarten</button
+          ><button id="random" class="text-button">Verras ons ↗</button>
+        </div>
+        <article id="challenge" class="challenge">
+          <div class="photo-topline">
+            <span id="categoryLabel"></span><span id="cardIndex"></span>
           </div>
-        </div>
-        <div class="team-bar">
-          <label for="activeTeam">Je speelt voor</label
-          ><select id="activeTeam" aria-label="Actief team">
-            <option value="">Kies een team</option></select
-          ><button id="manageTeams" class="text-button">Teams →</button>
-        </div>
-        <article class="challenge">
-          <div class="reference" id="reference"></div>
-          <div class="challenge-body">
-            <div class="title-row">
+          <button
+            id="referenceZoom"
+            class="reference-button"
+            aria-label="Vergroot de referentiefoto"
+          >
+            <img id="reference" alt="" /><span class="zoom-label"
+              >⤢ Vergroot</span
+            >
+          </button>
+          <div class="card-copy">
+            <div class="card-title">
               <h2 id="challengeTitle"></h2>
-              <button
-                id="favorite"
-                class="icon-button"
-                aria-label="Bewaar favoriet"
-                aria-pressed="false"
-              >
-                ☆
-              </button>
+              <span id="doneBadge" hidden>✓</span>
             </div>
             <p id="challengeDescription"></p>
-            <p id="challengeMeta" class="muted"></p>
-            <p id="referenceCredit" class="credit"></p>
+            <p id="challengeMeta" class="meta"></p>
+            <p id="imageError" class="error" hidden>
+              Deze foto kon niet laden. Vernieuw de pagina of kies een andere
+              kaart.
+            </p>
           </div>
         </article>
-        <div class="play-tools">
-          <button id="browse" class="secondary">Kies een andere foto</button
-          ><button id="random" class="secondary">Verras me ↗</button>
-        </div>
-        <div class="round-bar">
-          <label for="duration" class="sr-only">Rondetijd</label
-          ><select id="duration">
-            <option value="180">3 min</option>
-            <option value="300">5 min</option>
-            <option value="600">10 min</option>
-            <option value="900">15 min</option></select
-          ><output id="clock" aria-label="Resterende tijd">05:00</output
-          ><button id="timerToggle" class="text-button">Start timer</button
-          ><button
-            id="timerReset"
-            class="icon-button"
-            aria-label="Timer resetten"
-          >
-            ↺
-          </button>
-        </div>
         <button id="takePhoto" class="primary wide">
-          ＋ Maak of kies jullie foto
+          ＋ Maak jullie versie
         </button>
-        <p id="saveHint" class="hint">
-          Foto’s blijven op deze telefoon. Download na afloop jullie ZIP.
+        <p id="saveHint" class="hint center">
+          Alleen op deze telefoon. Niets wordt geüpload.
         </p>
-        <div class="next-row">
+        <button id="compareCurrent" class="secondary wide" hidden>
+          Bekijk jullie vergelijking →
+        </button>
+        <div class="navigation">
           <button id="previous" class="text-button">← Vorige</button
-          ><button id="skip" class="text-button">Sla over →</button>
+          ><span id="progress"></span
+          ><button id="next" class="text-button">Volgende →</button>
         </div>
-        <button id="finish" class="secondary wide">
-          Klaar? Bekijk jullie fotoalbum →
-        </button>
-        <details class="quiet-details">
-          <summary>Een eigen voorbeeld gebruiken</summary>
-          <p>
-            Voor filmbeelden zonder meegeleverde foto kun je een toegestaan
-            eigen voorbeeld kiezen. Dit voorbeeld blijft alleen op deze
-            telefoon.
+        <a class="finish-link" href="#album"
+          >Klaar voor vanavond? Download jullie ZIP ↗</a
+        >
+      </section>
+      <section id="albumPage" hidden>
+        <div class="intro">
+          <p class="eyebrow">ALLEMAAL OP DEZE TELEFOON</p>
+          <h1>DIT ZIJN<br /><em>JULLIE MOMENTEN.</em></h1>
+          <p id="albumCount"></p>
+        </div>
+        <button id="downloadZip" class="primary wide">↓ Download ZIP</button>
+        <p id="exportStatus" class="hint" role="status"></p>
+        <details class="group-options">
+          <summary>Groepsnaam voor de ZIP (optioneel)</summary>
+          <label for="groupName">Jullie groepsnaam</label
+          ><input
+            id="groupName"
+            maxlength="40"
+            placeholder="Onze groep"
+            autocomplete="off"
+          />
+        </details>
+        <div id="albumGrid" class="album-grid"></div>
+        <div id="emptyAlbum" class="empty" hidden>
+          <h2>Nog geen foto’s. Nog wel alle kansen.</h2>
+          <p>Kies een kaart en bewaar jullie eerste pose.</p>
+          <a class="secondary" href="#deck">Pak een kaart →</a>
+        </div>
+        <details id="legacySection" hidden>
+          <summary>
+            Eerder opgeslagen foto’s <span id="legacyCount"></span>
+          </summary>
+          <p class="hint">
+            Foto’s uit de vorige versie blijven bewaard. Ze staan los van het
+            nieuwe spel.
           </p>
-          <button id="customReference" class="secondary">Kies voorbeeld</button
-          ><button id="removeReference" class="text-button" hidden>
-            Verwijder eigen voorbeeld
+          <button id="legacyZip" class="secondary wide">
+            Download eerdere foto’s als ZIP
           </button>
+          <div id="legacyGrid" class="album-grid"></div>
         </details>
-      </section>
-      <section id="albumPage" class="page" hidden>
-        <div class="page-heading">
-          <div>
-            <p class="eyebrow">JULLIE HERINNERINGEN</p>
-            <h1>Het fotoalbum.</h1>
-          </div>
-          <button id="refreshAlbum" class="text-button">Vernieuw ↻</button>
-        </div>
-        <label class="sr-only" for="albumTeam">Filter op team</label
-        ><select id="albumTeam" class="wide">
-          <option value="">Alle mijn teams</option>
-        </select>
-        <button id="downloadAll" class="primary wide">
-          ↓ Download alle foto’s als ZIP
-        </button>
-        <p class="hint">
-          Alleen op deze telefoon opgeslagen. De ZIP bevat teammappen, titels,
-          beschikbare originelen en vergelijkingen. Download vóór je
-          browsergegevens wist.
+        <p class="storage-note">
+          Bewaar je ZIP voordat je browsergegevens wist. Elke telefoon heeft
+          zijn eigen album. Gebruik geen privémodus.
         </p>
-        <p id="exportStatus" role="status" class="hint"></p>
-        <div id="albumContent"></div>
-        <details class="quiet-details">
-          <summary>Waar worden foto’s bewaard?</summary>
-          <p>
-            Foto’s staan in de browseropslag op deze telefoon, niet online of in
-            GitHub. Cookies zijn te klein voor foto’s. Iedereen met toegang tot
-            deze browser kan dit album openen. Geen synchronisatie tussen
-            telefoons.
-          </p>
-          <p>
-            Gebruik geen privémodus. Opslag kan verdwijnen als je
-            browsergegevens wist of de browser ruimte vrijmaakt. Download na het
-            spel de ZIP en bewaar die veilig.
-          </p>
-        </details>
       </section>
-      <section id="teamsPage" class="page" hidden>
-        <div class="page-heading">
-          <div>
-            <p class="eyebrow">SAMEN SPELEN</p>
-            <h1>Jullie teams.</h1>
-          </div>
-        </div>
-        <p class="hint">
-          Teams en foto’s blijven op dit apparaat. Op een andere telefoon maak
-          je daar zelf een team en download je daar de ZIP.
-        </p>
-        <div id="storageNotice" class="notice" hidden>
-          Opslag is niet beschikbaar. Foto’s kunnen nu niet bewaard worden. Open
-          de site in een normale browser en probeer opnieuw.
-        </div>
-        <div id="teamList"></div>
-        <div class="panel">
-          <h2>Maak een team</h2>
-          <form id="createTeamForm">
-            <label class="sr-only" for="teamName">Teamnaam</label>
-            <div class="input-row">
-              <input
-                id="teamName"
-                maxlength="40"
-                placeholder="Bijvoorbeeld: De Vossen"
-                required
-              /><button class="primary" type="submit">Maak team</button>
-            </div>
-          </form>
-        </div>
-      </section>
+      <footer>
+        <span>Één groep. Eén telefoon. Heel veel slechte poses.</span
+        ><a href="credits.html">Fotocredits</a><span class="release">V2.0</span>
+      </footer>
     </main>
-    <nav class="bottom-nav" aria-label="Hoofdnavigatie">
-      <a href="#spelen" data-page="spelen" aria-current="page"
-        ><span aria-hidden="true">▣</span>Spelen</a
+    <nav class="bottom-nav" aria-label="Navigatie">
+      <a href="#deck" data-page="deck" aria-current="page"
+        >▣ <span>De kaarten</span></a
       ><a href="#album" data-page="album"
-        ><span aria-hidden="true">▦</span>Fotoalbum</a
-      ><a href="#teams" data-page="teams"
-        ><span aria-hidden="true">♧</span>Teams</a
+        >▦ <span>Jullie foto’s <b id="albumBadge">0</b></span></a
       >
     </nav>
-    <dialog id="browseDialog">
+    <dialog id="tutorialDialog">
       <div class="dialog-header">
-        <h2>Kies een foto</h2>
+        <span class="eyebrow">ZO WERKT HET / 15 SECONDEN</span
+        ><button
+          class="icon-button"
+          data-close="tutorialDialog"
+          aria-label="Sluiten"
+        >
+          ✕
+        </button>
+      </div>
+      <div class="dialog-body tutorial">
+        <h2>VAN ICOON<br />NAAR <em>JULLIE.</em></h2>
+        <ol>
+          <li>
+            <b>01</b
+            ><span><strong>Kies een foto.</strong> Of laat je verrassen.</span>
+          </li>
+          <li>
+            <b>02</b
+            ><span
+              ><strong>Maak ’m na.</strong> Gebruik wat er om je heen
+              ligt.</span
+            >
+          </li>
+          <li>
+            <b>03</b
+            ><span
+              ><strong>Bewaar & vergelijk.</strong> Eén foto per opdracht.</span
+            >
+          </li>
+          <li>
+            <b>04</b
+            ><span
+              ><strong>Download de ZIP.</strong> Alle foto’s, titels en
+              vergelijkingen.</span
+            >
+          </li>
+        </ol>
+        <button id="startPlaying" class="primary wide">
+          We gaan ervoor ↗
+        </button>
+        <p class="hint center">
+          Eén telefoon per groep. Foto’s blijven op die telefoon.
+        </p>
+      </div>
+    </dialog>
+    <dialog id="pickerDialog">
+      <div class="dialog-header">
+        <h2>PAK EEN KAART.</h2>
         <button
           class="icon-button"
-          data-close="browseDialog"
+          data-close="pickerDialog"
           aria-label="Sluiten"
         >
           ✕
         </button>
       </div>
       <div class="dialog-body">
-        <input
-          type="search"
-          id="search"
-          placeholder="Zoek een opdracht…"
-          aria-label="Zoek een opdracht"
-        />
-        <div class="browse-filters">
-          <label class="sr-only" for="category">Categorie</label
-          ><select id="category">
-            <option value="">Alle categorieën</option>
-            <option>Nederlandse memes</option>
-            <option>Nederlandse tv &amp; film</option>
-            <option>Memes wereldwijd</option>
-            <option>Films &amp; series</option>
-            <option>Iconische foto’s</option></select
-          ><label
-            ><input type="checkbox" id="showAll" /> Ook opdrachten met
-            zoeklink</label
-          ><label
-            ><input type="checkbox" id="favoritesOnly" /> Alleen
-            favorieten</label
-          >
-        </div>
-        <p id="browseCount" class="hint"></p>
-        <div id="browseGrid" class="browse-grid"></div>
+        <div id="categories" class="category-filters"></div>
+        <div id="pickerGrid" class="picker-grid"></div>
       </div>
     </dialog>
     <dialog id="uploadDialog">
       <div class="dialog-header">
-        <h2>Bewaar jullie foto</h2>
+        <h2>JULLIE VERSIE.</h2>
         <button
           class="icon-button"
           data-close="uploadDialog"
@@ -286,55 +267,41 @@
         </button>
       </div>
       <div class="dialog-body">
+        <p id="uploadTitle"></p>
         <img id="uploadPreview" class="preview" alt="Jullie gekozen foto" />
-        <p id="uploadCaption"></p>
-        <p class="hint">
-          Blijft op deze telefoon, zonder upload. Locatiegegevens worden uit het
-          opgeslagen bestand verwijderd.
-        </p>
-        <label for="photoPoints">Punten voor deze foto</label
-        ><select id="photoPoints">
-          <option value="0">0 punten</option>
-          <option value="1">1 punt</option>
-          <option value="2">2 punten</option>
-          <option value="3">3 punten</option>
-          <option value="4">4 punten</option>
-          <option value="5" selected>5 punten</option>
-          <option value="6">6 punten</option>
-          <option value="7">7 punten</option>
-          <option value="8">8 punten</option>
-          <option value="9">9 punten</option>
-          <option value="10">10 punten</option></select
-        ><button id="savePhoto" class="primary wide">
-          Bewaar op deze telefoon
+        <p id="replaceHint" class="hint"></p>
+        <button id="savePhoto" class="primary wide">
+          Bewaar & vergelijk →
         </button>
-        <p id="uploadMessage" class="hint" role="status"></p>
+        <p id="uploadStatus" class="hint" role="status">
+          Alleen op deze telefoon, zonder upload.
+        </p>
       </div>
     </dialog>
-    <dialog id="photoDialog">
+    <dialog id="viewerDialog">
       <div class="dialog-header">
-        <h2 id="photoTitle">Foto</h2>
+        <h2 id="viewerTitle"></h2>
         <button
           class="icon-button"
-          data-close="photoDialog"
+          data-close="viewerDialog"
           aria-label="Sluiten"
         >
           ✕
         </button>
       </div>
       <div class="dialog-body">
-        <div id="photoView"></div>
-        <div class="split">
-          <button id="downloadPhoto" class="secondary">Download foto</button
-          ><button id="deletePhoto" class="text-button danger">
-            Verwijder
-          </button>
+        <div id="comparison" class="comparison"></div>
+        <div id="photoActions" class="viewer-actions">
+          <button id="replacePhoto" class="secondary">Andere foto kiezen</button
+          ><button id="deletePhoto" class="text-button">Verwijder foto</button>
         </div>
+        <button id="continuePlaying" class="primary wide">
+          Volgende kaart →
+        </button>
       </div>
     </dialog>
     <input type="file" id="photoPicker" accept="image/*" hidden />
-    <input type="file" id="referencePicker" accept="image/*" hidden />
     <div id="toast" role="status" hidden></div>
-    <noscript><p>Schakel JavaScript in om FOTOJACHT te gebruiken.</p></noscript>
+    <noscript>Schakel JavaScript in om FOTOJACHT te spelen.</noscript>
   </body>
 </html>

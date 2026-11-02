@@ -1,63 +1,80 @@
 import fs from "node:fs";
 import vm from "node:vm";
 import assert from "node:assert/strict";
-const context = { window: {} };
-vm.runInNewContext(fs.readFileSync("challenges.js", "utf8"), context);
-const data = context.window.CHALLENGES;
-assert.equal(data.length, 145);
-assert.equal(new Set(data.map((x) => x.id)).size, data.length);
-assert.equal(new Set(data.map((x) => x.title.toLowerCase())).size, data.length);
-for (let i = 1; i <= 125; i++)
-  assert(
-    data.some((x) => x.id === `foto-${String(i).padStart(3, "0")}`),
-    "Original ID missing",
-  );
-const sources = JSON.parse(fs.readFileSync("assets/references/sources.json"));
+const ctx = { window: {} };
+vm.runInNewContext(fs.readFileSync("challenges.js", "utf8"), ctx);
+const data = ctx.window.FOTOJACHT_LOCAL_REFERENCES;
+assert(
+  data.length >= 24 && data.length <= 40,
+  "Keep a small, complete local-photo deck",
+);
+assert.equal(new Set(data.map((i) => i.id)).size, data.length);
+assert.equal(new Set(data.map((i) => i.title)).size, data.length);
+const manifest = JSON.parse(
+  fs.readFileSync("assets/references/sources.json", "utf8"),
+);
+assert.equal(manifest.version, 2);
+assert.deepEqual(JSON.parse(JSON.stringify(data)), manifest.items);
 for (const item of data) {
   for (const key of [
     "id",
     "title",
-    "description",
     "category",
-    "query",
-    "people",
     "difficulty",
+    "description",
+    "image",
+    "author",
+    "license",
+    "licenseUrl",
+    "source_page",
+    "sourceFile",
   ])
-    assert(item[key], `${item.id}: ${key}`);
-  if (item.image) {
-    assert(!item.image.startsWith("http"));
-    assert(fs.existsSync(item.image));
-    assert(sources.some((x) => x.id === item.id && x.image === item.image));
-    assert(item.author && item.source && item.license);
-  } else assert.equal(item.referenceType, "search");
+    assert(item[key], `${item.id}: ${key} missing`);
+  assert.equal(item.status, "ready");
+  assert.equal(item.imageType, "photograph");
+  assert(Number.isInteger(item.players) && item.players >= 1);
+  assert(/^assets\/references\/[a-z0-9-]+\.jpg$/.test(item.image), item.image);
+  assert(fs.existsSync(item.image), item.image);
+  const file = fs.readFileSync(item.image);
+  assert.equal(file.readUInt16BE(0), 0xffd8);
+  assert(file.length > 10000, `${item.id}: reference too small`);
+  assert(
+    item.license === "Public domain" ||
+      item.license === "CC0" ||
+      /^CC BY(?:-SA)? /.test(item.license),
+  );
+  assert(item.licenseUrl.startsWith("https://creativecommons.org/"));
 }
-const html = fs.readFileSync("index.html", "utf8");
-const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((x) => x[1]);
-assert.equal(ids.length, new Set(ids).size, "Duplicate element IDs");
-for (const path of [
-  "app.js",
+for (const file of ["app.js", "sw.js", "challenges.js", "vendor/fflate.js"])
+  new vm.Script(fs.readFileSync(file, "utf8"));
+const html = fs.readFileSync("index.html", "utf8"),
+  app = fs.readFileSync("app.js", "utf8");
+const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
+assert.equal(ids.length, new Set(ids).size);
+for (const match of app.matchAll(/\$\(['"]([^'"]+)['"]\)/g))
+  assert(ids.includes(match[1]), `Missing UI element ${match[1]}`);
+assert(
+  !/timerToggle|teamName|createTeam|searchOriginal|showAll|google\.com|tbm=isch/.test(
+    html + app,
+  ),
+  "Old gameplay controls must not return",
+);
+for (const file of [
   "styles.css",
-  "sw.js",
   "manifest.webmanifest",
+  "credits.html",
+  "archive/challenges-v1.json",
   "assets/icon.svg",
   "assets/og-image.png",
-  "vendor/fflate.js",
 ])
-  assert(fs.existsSync(path));
-new vm.Script(fs.readFileSync("app.js", "utf8"));
-new vm.Script(fs.readFileSync("sw.js", "utf8"));
-console.log(
-  `PASS: ${data.length} unique challenges; all 125 original IDs; ${sources.length} local references; valid scripts and assets.`,
-);
-
+  assert(fs.existsSync(file), file);
+const archive = JSON.parse(fs.readFileSync("archive/challenges-v1.json"));
+assert.equal(archive.length, 145);
 const png = fs.readFileSync("assets/og-image.png");
 assert.equal(png.readUInt32BE(16), 1200);
 assert.equal(png.readUInt32BE(20), 630);
 assert(html.includes('property="og:image"'));
 assert(html.includes('name="twitter:card"'));
-assert(
-  html.includes(
-    "https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/assets/og-image.png",
-  ),
+console.log(
+  `PASS: ${data.length} real local-photo challenges, matching V2 manifest/credits, 145 archived titles, valid app/worker, no timers/teams/search detours, social preview intact.`,
 );
-console.log("PASS: exact 1200×630 social image and OG/Twitter metadata.");

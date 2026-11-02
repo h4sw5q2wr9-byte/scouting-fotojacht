@@ -1,14 +1,13 @@
-# v5 — local photos and ZIP export
+# FOTOJACHT V2 verification
 
-No backend is needed. No participant photos are uploaded. The challenge library and social metadata remain unchanged.
-
-Checks:
-
-- `node scripts/verify.mjs`: 145 unique challenges, all original IDs, 11 local reference files/source credits, app/worker syntax, required files and exact 1200×630 Open Graph/Twitter image.
-- `python scripts/browser-smoke.py`: mobile/touch Chromium; 320/375/390/768/1440px layouts; default team, multiple teams, photo capture/selection/confirmation, original reference snapshot, JPEG encoding without original EXIF, reload persistence, gallery/comparison, points, all-team and per-team ZIP exports. Python zipfile validates CRCs and paths, correct teams/titles, original files and actual 1600×1050 comparison JPEGs. The extracted HTML and comparison images load through a repository-only local server. Deletion, favorites and timer are also checked. The test records network requests and rejects every network write. No JS page errors.
-- `python scripts/browser-edge-cases.py`: previous IndexedDB photo migration, custom reference persistence, missing-image fallback and timer/settings persistence.
+- `node scripts/verify.mjs`: 25 unique real local JPEG challenges, V2 manifest/data parity, credits and usable license fields, valid scripts, 145 archived titles, exact 1200×630 social preview, no old timer/team/search controls.
+- `python scripts/browser-smoke.py`: first-open/reopen tutorial, all 25 local photos actually decode, responsive widths 320/375/390/768/1440px, make/choose/save a recreation, one-per-challenge replacement, reload persistence, side-by-side comparison, continue/previous/category picker, current-photo deletion, ZIP CRC/readable paths/titles/originals/credits and actual 1600×1080 JPEG comparisons. The test asserts no network writes and no JS page errors. Test artwork inputs, not personal photos, are used.
 - `git diff --check`.
 
-Start a localhost-only repository server on port 8769 before the smoke test. It uses local reference artwork as test input, never a personal photo. Test outputs stay under `/tmp` and are not committed.
+Start a repository-only server on `127.0.0.1:8772` for the browser tests. Playwright, Chromium and Pillow are development tools, not visitor dependencies. Generated ZIPs/screenshots stay under `/tmp`.
 
-Limits: no physical iPhone Safari test was available. A native photo picker, HEIC decoding, iOS download UI and memory limits must be checked on the actual phone. The ZIP always includes individual JPEG comparisons even if the phone's HTML viewer restricts relative local images. A managed browser policy blocked direct file:// navigation in this environment; the extracted album was tested through localhost instead. If a very large export cannot fit in memory, use the smaller per-team ZIP buttons. Browser storage can be evicted: download a ZIP backup before leaving the game.
+Reference photographs were individually inspected in a contact sheet; distant S10, André Rieu and Loreen shots were replaced with clearer licensed photos. An agency-credited Max image was excluded in favor of Morio's own licensed podium photograph. Titles/instructions were corrected to match the actual visible poses. No generated illustration substitutes are used as challenge references.
+
+A physical iPhone Safari was not available. Native camera selection, HEIC decoding, iOS Files download behavior and OS storage eviction still need an actual device check. The app uses 16px native file/input controls, safe-area spacing and native dialogs. Cookies are not used for photos; IndexedDB persists them locally. Private mode/cleared storage can remove data, so download the ZIP backup.
+
+The V2 pack itself contained no actual reference photos. Its manifest shape, contract and export folder guidance were applied; placeholder examples are kept only in docs and never enter gameplay. Starting release is recoverable from tag `before-v2-deck-2026-11-02`.

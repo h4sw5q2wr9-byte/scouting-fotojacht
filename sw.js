@@ -1,5 +1,4 @@
-const NAME = "fotojacht-local-v5.0.0";
-// Strict allowlist: no auth requests, storage downloads, personal photos or blobs.
+const NAME = "fotojacht-deck-v2.0.0";
 const CORE = [
   "./",
   "./index.html",
@@ -9,16 +8,25 @@ const CORE = [
   "./vendor/fflate.js",
   "./manifest.webmanifest",
   "./assets/icon.svg",
+  "./credits.html",
+  "./assets/references/sources.json",
+  "./archive/challenges-v1.json",
 ];
-const PUBLIC_PATHS = new Set(
+const allowed = new Set(
   CORE.map((path) => new URL(path, self.location.href).pathname),
 );
 self.addEventListener("install", (event) =>
   event.waitUntil(
-    caches
-      .open(NAME)
-      .then((cache) => cache.addAll(CORE))
-      .then(() => self.skipWaiting()),
+    (async () => {
+      const cache = await caches.open(NAME);
+      await cache.addAll(CORE);
+      const response = await cache.match("./assets/references/sources.json");
+      const manifest = await response.json();
+      // Preload the complete small deck: no remote originals or personal photos.
+      for (const item of manifest.items.filter((i) => i.status === "ready"))
+        await cache.add("./" + item.image);
+      await self.skipWaiting();
+    })(),
   ),
 );
 self.addEventListener("activate", (event) =>
@@ -45,7 +53,7 @@ self.addEventListener("fetch", (event) => {
   )
     return;
   if (
-    !PUBLIC_PATHS.has(url.pathname) &&
+    !allowed.has(url.pathname) &&
     !url.pathname.startsWith(
       new URL("./assets/references/", self.location.href).pathname,
     )

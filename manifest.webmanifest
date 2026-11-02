@@ -1,12 +1,12 @@
 {
-  "name": "FOTOJACHT — Scouting Foto Challenge",
+  "name": "FOTOJACHT V2 — Maak het na",
   "short_name": "FOTOJACHT",
-  "description": "Scouting opdracht: bekende foto's en memes namaken",
+  "description": "Een groep, 25 echte referentiefoto’s, jullie eigen versie.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "theme_color": "#101218",
-  "background_color": "#101218",
+  "theme_color": "#101014",
+  "background_color": "#101014",
   "lang": "nl",
   "icons": [
     {

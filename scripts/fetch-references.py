@@ -1,35 +1,48 @@
-"""Curated public-domain works only. Review source pages before changing this list."""
-import urllib.request, urllib.parse, re, html, json, io, subprocess
+"""Fetch explicitly curated Commons photographs, preserving image-level licensing.
+Run: python scripts/fetch-references.py path/to/candidates.json
+Candidate records: [Commons filename, challenge title, category, people, instruction].
+Review every resulting photo/credit before publishing. No external gameplay images.
+"""
 from pathlib import Path
-from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
+from PIL import Image
+import re,html,json,io,subprocess,urllib.parse,sys,hashlib
 ROOT=Path(__file__).resolve().parents[1]
-WORKS=[
-('foto-110','The Scream.jpg','Edvard Munch'),
-('foto-111','Última Cena - Da Vinci 5.jpg','Leonardo da Vinci'),
-('foto-112','Grant Wood - American Gothic - Google Art Project.jpg','Grant Wood'),
-('foto-113','Mona Lisa, by Leonardo da Vinci, from C2RMF retouched.jpg','Leonardo da Vinci / C2RMF / Dcoetzee'),
-('foto-114','Girl with a Pearl Earring.jpg','Johannes Vermeer'),
-('foto-120','We Can Do It!.jpg','J. Howard Miller / Westinghouse'),
-('foto-121','Creation of Adam (Michelangelo) Detail.jpg','Michelangelo'),
-('foto-126','Johannes Vermeer - Het melkmeisje - Google Art Project.jpg','Johannes Vermeer'),
-('foto-127','Rembrandt Harmensz. van Rijn - Nachtwacht - Google Art Project.jpg','Rembrandt van Rijn'),
-('foto-128','Buzz salutes the U.S. Flag.jpg','NASA / Neil Armstrong'),
-('foto-129','Uncle Sam (pointing finger).jpg','James Montgomery Flagg'),
-]
-def get(w):
- id,title,author=w
+CACHE=Path('/tmp/reference-review');CACHE.mkdir(exist_ok=True)
+candidates=json.loads(Path(sys.argv[1]).read_text())
+def clean(value):
+ value=re.sub(r'<(style|script)\b[^>]*>.*?</\1>','',value,flags=re.S|re.I)
+ return re.sub(r'\s+',' ',re.sub('<[^>]+>',' ',html.unescape(value))).strip()
+def get(row):
+ file,title,category,people,description=row
+ key=hashlib.sha1(file.encode()).hexdigest()[:10];source='https://commons.wikimedia.org/wiki/File:'+urllib.parse.quote(file.replace(' ','_'))
  try:
-  source='https://commons.wikimedia.org/wiki/File:'+urllib.parse.quote(title.replace(' ','_'))
-  page=subprocess.check_output(['curl','-fLsS','--max-time','30',source]).decode()
-  if 'public domain' not in page.lower():raise ValueError('No public-domain declaration')
+  path=CACHE/(key+'.html')
+  if not path.exists():path.write_bytes(subprocess.check_output(['curl','-fLsS','--retry','2','--max-time','35',source]))
+  page=html.unescape(path.read_text())
+  shorts=re.findall(r'class="licensetpl_short"[^>]*>(.*?)</span>',page,re.S)
+  license=next((clean(x) for x in shorts if re.match(r'^(CC BY(?:-SA)? [0-9.]+|CC0|Public domain)',clean(x))),None)
+  if not license:raise ValueError('No acceptable image-level license: '+repr([clean(x) for x in shorts]))
+  if 'nominated for deletion' in clean(page[:page.find('id="filehistory"')]).lower():raise ValueError('Deletion warning: manual review required')
   match=re.search(r'<meta property="og:image" content="([^"]+)"',page)
-  if not match:raise ValueError('No thumbnail')
-  url=html.unescape(match[1]).split('?')[0].replace('https://thumb.wikimedia.org/','https://upload.wikimedia.org/');raw=subprocess.check_output(['curl','-fLsS','--max-time','30',url])
-  im=Image.open(io.BytesIO(raw));im.thumbnail((1100,1100))
-  path=f'assets/references/{id}.webp';im.convert('RGB').save(ROOT/path,'WEBP',quality=82)
-  print(id,title,im.size)
-  return dict(id=id,image=path,source=source,author=author,license='Publiek domein',modifications='Verkleind en omgezet naar WebP')
- except Exception as e:print('FAILED',id,title,str(e));return None
-with ThreadPoolExecutor(max_workers=4) as pool:rows=[r for r in pool.map(get,WORKS) if r]
-(ROOT/'assets/references/sources.json').write_text(json.dumps(rows,ensure_ascii=False,indent=2))
+  if not match:raise ValueError('No image')
+  media=match[1].split('?')[0].replace('https://thumb.wikimedia.org/','https://upload.wikimedia.org/')
+  raw=CACHE/(key+'.image')
+  if not raw.exists():raw.write_bytes(subprocess.check_output(['curl','-fLsS','--retry','2','--max-time','40',media]))
+  im=Image.open(io.BytesIO(raw.read_bytes()));im.thumbnail((1400,1200));
+  slug=re.sub('[^a-z0-9]+','-',title.lower()).strip('-');image=f'assets/references/{slug}.jpg';im.convert('RGB').save(ROOT/image,'JPEG',quality=87,optimize=True)
+  authorrow=re.search(r'id="fileinfotpl_aut".*?</td>\s*<td[^>]*>(.*?)(?:</td>\s*</tr>)',page,re.S)
+  author=clean(authorrow[1]) if authorrow else ''
+  fn=re.search(r'class="fn"[^>]*>(.*?)</',authorrow[1],re.S) if authorrow else None
+  if fn:author=clean(fn[1])
+  if file.startswith('Barack Obama with Spider-Man') or file.startswith('Barack Obama with artistic') or file.startswith('Obama and Biden'):author='Pete Souza / The White House'
+  if file.startswith('Barack Obama Mic'):author='The White House'
+  if file.startswith('Buzz salutes'):author='Neil Armstrong / NASA'
+  if not author or len(author)>300:author=author[:300] or 'See source page — needs review'
+  licenseURL='https://creativecommons.org/publicdomain/mark/1.0/' if license=='Public domain' else next(iter(re.findall(r'class="licensetpl_link"[^>]*>(https://creativecommons.org/[^<]+)</span>',page)),'')
+  result=dict(id='deck-'+key,title=title,category=category,people=people,description=description,image=image,author=author,license=license,licenseUrl=licenseURL,source=source,sourceFile=file,modifications='Resized to maximum 1400×1200; JPEG encoded; no pose edits',imageType='photograph',enabled=True)
+  print('OK',title,license,author[:110],im.size,flush=True);return result
+ except Exception as error:print('FAILED',title,str(error),flush=True);return None
+with ThreadPoolExecutor(max_workers=2) as pool:results=[row for row in pool.map(get,candidates) if row]
+Path('/tmp/new-photo-deck.json').write_text(json.dumps(results,ensure_ascii=False,indent=2))
+print('TOTAL',len(results))

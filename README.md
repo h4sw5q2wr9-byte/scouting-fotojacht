@@ -1,44 +1,52 @@
-# FOTOJACHT — v5
+# FOTOJACHT V2 — Maak ’m na
 
 **Live:** https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/
 
-Een simpele fotochallenge: **Spelen → Fotoalbum → Teams**. Geen account, backend of cloudopslag. Alle 145 bestaande opdrachten zijn ongewijzigd beschikbaar. De standaard fotokiezer toont de 11 lokale referenties; schakel **Ook opdrachten met zoeklink** in voor de overige scènes. Copyrightbeelden worden niet zonder toestemming meegeleverd. Je kunt een eigen toegestaan voorbeeld lokaal toevoegen.
+Eén groep per telefoon. **25 echte, lokaal ingebouwde referentiefoto’s**: Nederlandse popcultuur, memes, filmpubliciteitsfoto’s, muziek en iconische fotografie. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
 
-## In één minuut starten
+## Vanavond gebruiken
 
-1. Er staat meteen een team **Mijn team** klaar. Verander de naam of voeg teams toe bij **Teams**.
-2. Kies een foto en maak de pose na. De timer is optioneel.
-3. Kies **Maak of kies jullie foto**, bekijk de preview, geef punten en kies **Bewaar op deze telefoon**.
-4. Tik bij **Fotoalbum** op **Download alle foto’s als ZIP**, of kies de ZIP-knop naast één team.
+1. Open de site en lees de vier korte stappen. De **?** rechtsboven opent de uitleg opnieuw.
+2. Kies **Alle 25 kaarten** of **Verras ons**. Het origineel staat groot in de site; tik om te vergroten.
+3. Kies **Maak jullie versie**, maak of kies een foto en tik **Bewaar & vergelijk**.
+4. Bekijk beide foto’s naast elkaar en ga door naar de volgende kaart. Er blijft **één foto per opdracht** bewaard; een nieuwe versie vervangt de vorige na bevestiging.
+5. Tik onderaan op **Jullie foto’s**, daarna op de grote knop **Download ZIP**.
 
-De ZIP bevat per team en opdracht een map met:
+De ZIP volgt het aangeleverde V2-pack:
 
-- jullie foto met de passende opdrachttitel in het mappad;
-- het opgeslagen origineel, als dat beschikbaar is;
-- **vergelijking.jpg** met titel, team en origineel naast jullie foto;
-- **referentie.txt** met beschrijving, titel, bron en zoeklink;
-- daarnaast **album.html** voor het uitgepakte album, **overzicht.json** en **LEES-MIJ.txt**.
+- `photos/joost-europapa.jpg` — jullie foto’s met leesbare titels;
+- `comparisons/joost-europapa-comparison.jpg` — originele referentie naast jullie versie, met titel;
+- `originals/` — de bewaarde referenties;
+- `results.json` — titels, bestandsnamen en overzicht;
+- `credits.json` — makers, bronnen, licenties en bewerkingen van de originelen;
+- `index.html` en `LEES-MIJ.txt` — album en uitleg na uitpakken.
 
-Ontbreekt het origineel, dan toont de vergelijking dat expliciet en staat er een zoeklink bij. Nieuwe foto's bewaren een kopie van het beschikbare voorbeeld zodat de vergelijking niet verandert als je later een ander voorbeeld kiest. Pak de ZIP uit in Bestanden/Downloads. De losse vergelijking-JPG's werken ook als je telefoon het HTML-album niet volledig toont.
+## Lokaal bewaren
 
-## Belangrijk voor vanavond
+Foto’s blijven in **IndexedDB op deze telefoon**. Er zijn geen accounts, uploads of gedeelde serveralbums. Voorkeuren en de afgeronde tutorial staan in localStorage. Cookies zijn te klein om foto’s in op te slaan.
 
-- **Foto's blijven uitsluitend in deze browser op deze telefoon.** Er is geen synchronisatie tussen telefoons. Iedere telefoon downloadt zijn eigen ZIP; deel die daarna zelf met de organisator.
-- Cookies zijn veel te klein voor foto's. De app gebruikt **IndexedDB** voor foto's/teams en **localStorage** voor voorkeuren, timer en favorieten. Er worden geen foto’s naar GitHub of een server verstuurd.
-- Gebruik geen privémodus. Browsergegevens wissen of opslagopruiming kan de foto's verwijderen. Download de ZIP na het spel als back-up. Iedereen die deze browser kan gebruiken, kan het lokale album openen: het is geen met een wachtwoord beveiligde kluis.
-- Foto's worden maximaal 1800px groot als JPEG opgeslagen; oorspronkelijke EXIF/GPS-metadata wordt niet overgenomen. De camera-/fotobibliotheekkiezer is van de telefoon zelf.
-- Foto's uit de eerdere site blijven behouden en worden in een lokaal team **Eerdere foto's** gezet. Ze worden niet geüpload.
+Gebruik geen privémodus. Browsergegevens wissen of opslagopruiming kan foto’s verwijderen: **download de ZIP aan het eind**. Iedere telefoon exporteert zijn eigen foto’s. Een optionele groepsnaam verandert alleen de naam/titel van de export; er is geen multi-teammodus.
 
-## Ontwikkeling en publicatie
+Eerder bewaarde foto’s blijven apart beschikbaar onder **Eerder opgeslagen foto’s** in het album. De oude 145 opdrachttitels blijven in `archive/challenges-v1.json` voor die oude exports; ze zijn niet speelbaar in de nieuwe fotodeck. Ook oude v1-IndexedDB-foto’s worden behouden.
+
+Nieuwe foto’s worden maximaal 1800px als JPEG opgeslagen, zonder de oorspronkelijke EXIF/GPS-metadata. De ingebouwde referentie wordt bij de foto bewaard voor een stabiele vergelijking. Downloaden of delen doe je zelf met toestemming van deelnemers.
+
+## Inhoud en het V2-pack
+
+Het aangeleverde `FOTOJACHT_V2_Codex_Pack.zip` is gelezen en gebruikt. Het bevatte een structuur, instructies en placeholders, geen bruikbare referentiefoto’s. De instructies en het contract staan onder `docs/v2-pack/`.
+
+`assets/references/sources.json` gebruikt het V2-formaat `{version, items}`. Elk speelbaar item heeft een lokale JPEG, maker, image-level licentie, bronpagina, bewerkingsnotitie, `status: ready`, categorie, moeilijkheid en spelersaantal. `challenges.js` stelt dezelfde entries beschikbaar als `FOTOJACHT_LOCAL_REFERENCES`.
+
+De referenties zijn echte foto’s/publiciteitsbeelden uit herbruikbare Commons-bronnen, geen AI-vervangingen. Het gaat onder meer om Joost/Europapa, Snollebollekes, Duncan, S10, Max & Lewis, Grumpy Cat, Rick Astley, ‘not impressed’, Chaplin, Marilyn, Audrey en Bolt. Een scène zonder toegestane lokale foto is bewust niet opgenomen. Verre podiumbeelden zijn vervangen door duidelijkere foto's. Fotocredits staan lokaal op `credits.html`; bronlinks daar zijn alleen voor attributie en niet nodig om te spelen. Licenties van originelen gelden voor die originelen, niet automatisch voor jullie eigen foto’s.
+
+## Ontwikkeling en deploy
 
 ```sh
-python3 -m http.server 8769 --bind 127.0.0.1
+python3 -m http.server 8772 --bind 127.0.0.1
 node scripts/verify.mjs
 python3 scripts/browser-smoke.py
 ```
 
-HTML, CSS en JavaScript; geen build nodig. ZIP's worden lokaal gemaakt met de gebundelde MIT-library fflate v0.8.2 (`vendor/FFLATE-LICENSE.txt`). Alleen openbare site-assets gaan naar GitHub Pages; de service worker bewaart geen persoonlijke foto's.
+Geen build of backend. De MIT-library fflate v0.8.2 maakt ZIP's in de browser. De service worker bewaart de openbare app en volledige kleine fotodeck voor offline gebruik na de eerste volledige installatie; persoonlijke foto’s gaan uitsluitend naar IndexedDB, niet naar Cache Storage.
 
-Elke push naar **main** wordt gecontroleerd en direct via GitHub Actions gepubliceerd. Open de site opnieuw of vernieuw om de nieuwste versie te laden; de header toont **v5**. De Open Graph/Twitter metadata en de 1200×630 social preview zijn behouden.
-
-Bronnen van de lokale referenties: [assets/references/sources.json](assets/references/sources.json). Herstelpunten: `original-zip` en `before-simple-teams-2026-11-02`. De eerdere Supabase-opzet is vervallen; deze versie vereist geen verbinding of accounts. Validatie: [TESTING.md](TESTING.md).
+Elke werkende push naar **main** wordt direct via GitHub Pages gepubliceerd. Social previews zijn behouden. Startpunt van deze rebuild: tag **before-v2-deck-2026-11-02**, commit `77b962c`. Oudere herstelpunten: `original-zip` en `before-simple-teams-2026-11-02`.
