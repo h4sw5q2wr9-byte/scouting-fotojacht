@@ -2,6 +2,8 @@
 
 **Live:** https://h4sw5q2wr9-byte.github.io/scouting-fotojacht/
 
+**Appicoon:** de bestaande camera heeft nu eigen PNG-/ICO-bestanden voor het kleine website-icoon, delen en het iPhone-beginscherm. De Apple-touch-link is expliciet, de bestandsnamen zijn inhoudsversies en de offlinecache is bijgewerkt. De manifest-ID, start-URL en scope verwijzen uitsluitend naar `/scouting-fotojacht/`. Dit verbetert de icoonconfiguratie; het is geen bevestigde oplossing voor iOS dat via Now Playing een andere webapp opent. Verwijder de app of browseropslag niet zonder eerst jullie foto's als ZIP te bewaren.
+
 Eén groep per telefoon. **56 lokaal ingebouwde referenties**: Grappige interacties, komische scènes en overdreven reacties. **49 groepskaarten**, plus 7 solo-reacties (één daarvan ook met twee personen). Concert-, sport- en rode-loperportretten zijn verwijderd. Geen timer, scorebord, teambeheer, hotlinks of zoekmachines in het spel.
 
 ## Vanavond gebruiken

@@ -5,6 +5,8 @@
 - `python scripts/browser-edge-cases.py`: original v1 photo migration and separate readable legacy ZIP, idempotent recovery after reload, broken-image cards hidden without search links, denied storage reported without pretending to save, complete 21-photo deck cached and loaded offline, including the `?v=2` test link. Personal photos are absent from Cache Storage.
 - `git diff --check`.
 
+Icon update: the existing camera SVG is also supplied as opaque 32/180/192/512px PNGs and a multi-size ICO. The page advertises dedicated favicon and Apple touch icon URLs. The manifest preserves the old resolved install identity at `/scouting-fotojacht/`; the worker caches the new icon files and versioned manifest. Offline edge checks now discover the active cache instead of assuming an old release name, and decode the advertised icons after disconnecting. Physical iOS sharing/Home Screen cache behavior and Dynamic Island routing remain unverified; this change does not claim to fix OS media routing.
+
 Start a repository-only server on `127.0.0.1:8772` for the browser tests. Playwright, Chromium and Pillow are development tools, not visitor dependencies. Generated ZIPs/screenshots stay under `/tmp`.
 
 Reference photographs were individually inspected in a contact sheet; distant S10, André Rieu and Loreen shots were replaced with clearer licensed photos. An agency-credited Max image was excluded in favor of Morio's own licensed podium photograph. Titles/instructions were corrected to match the actual visible poses. No generated illustration substitutes are used as challenge references.

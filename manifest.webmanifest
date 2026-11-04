@@ -2,18 +2,25 @@
   "name": "FOTOJACHT — Maak het na",
   "short_name": "FOTOJACHT",
   "description": "Grappige foto-opdrachten voor jullie groep. Foto’s blijven op je telefoon.",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/scouting-fotojacht/",
+  "scope": "/scouting-fotojacht/",
   "display": "standalone",
   "theme_color": "#101014",
   "background_color": "#101014",
   "lang": "nl",
   "icons": [
     {
-      "src": "assets/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/fotojacht-icon-192-266f80f7d196.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/fotojacht-icon-512-13bf584abc9d.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     }
-  ]
+  ],
+  "id": "/scouting-fotojacht/"
 }

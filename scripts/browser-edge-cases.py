@@ -37,11 +37,13 @@ with sync_playwright() as p:
  assert not errors,errors
  # Complete worker install caches public references, not personal media.
  offline=browser.new_context(service_workers='allow');tab=offline.new_page();tab.goto(URL+'?v=2');tab.locator('#startPlaying').click();tab.locator('#skipGroupName').click();tab.evaluate('navigator.serviceWorker.ready');tab.wait_for_function('navigator.serviceWorker.controller!==null')
- cached=tab.evaluate('''async()=>{const c=await caches.open('fotojacht-deck-v2.5.0');return (await c.keys()).map(r=>new URL(r.url).pathname)}''')
+ cached=tab.evaluate('''async()=>{const names=(await caches.keys()).filter(name=>name.startsWith('fotojacht-'));if(names.length!==1)throw Error('Expected one current Fotojacht cache');const c=await caches.open(names[0]);return (await c.keys()).map(r=>new URL(r.url).pathname)}''')
  for item in json.loads((ROOT/'assets/references/sources.json').read_text())['items']:
   assert '/'+item['image'] in cached
   assert '/'+item['previewImage'] in cached
  assert not any('/photos/' in path or 'blob:' in path for path in cached)
  offline.set_offline(True);tab.reload();expect(tab.locator('#reference')).to_have_js_property('complete',True);assert tab.locator('#reference').evaluate('(e)=>e.naturalWidth>0');tab.locator('#browse').click();expect(tab.locator('.picker-card')).to_have_count(TOTAL)
+ # Both the advertised versioned manifest and its dedicated icons work offline.
+ assert tab.evaluate('''async()=>{const manifest=await (await fetch(document.querySelector('link[rel=manifest]').href)).json();if(manifest.id!=='/scouting-fotojacht/'||manifest.scope!==manifest.id||manifest.start_url!==manifest.id)throw Error('Incorrect installed-app boundary');const urls=[document.querySelector('link[rel=icon]').href,document.querySelector('link[rel=apple-touch-icon]').href,...manifest.icons.map(icon=>icon.src)];for(const src of urls){const image=new Image();image.src=src;await image.decode();if(!image.naturalWidth)throw Error('Undecodable icon');}return true}''')
  offline.close();browser.close()
  print('PASS: original v1 photo recovery/legacy ZIP without data loss; broken refs hidden/no search detours; storage denied fails clearly; full 56-image deck and app load offline after worker install, with no personal photos in Cache Storage.')

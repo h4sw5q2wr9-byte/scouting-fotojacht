@@ -1,4 +1,4 @@
-const NAME = "fotojacht-deck-v2.5.0";
+const NAME = "fotojacht-deck-v2.5.1-icons";
 const CORE = [
   "./",
   "./index.html",
@@ -7,7 +7,13 @@ const CORE = [
   "./challenges.js",
   "./vendor/fflate.js",
   "./manifest.webmanifest",
+  "./manifest.webmanifest?v=bcdf49eb1bf3",
   "./assets/icon.svg",
+  "./assets/fotojacht-icon-32-efdfd8ce02dc.png",
+  "./assets/fotojacht-icon-180-99a49de2fca9.png",
+  "./assets/fotojacht-icon-192-266f80f7d196.png",
+  "./assets/fotojacht-icon-512-13bf584abc9d.png",
+  "./assets/fotojacht-favicon-20c631674db2.ico",
   "./credits.html",
   "./docs/user-reference-uploads.md",
   "./assets/references/sources.json",
@@ -58,7 +64,10 @@ self.addEventListener("fetch", (event) => {
   const versionedNavigation =
     event.request.mode === "navigate" &&
     [...url.searchParams.keys()].every((key) => key === "v");
-  if (url.search && !versionedNavigation) return;
+  const versionedManifest =
+    url.pathname === new URL("./manifest.webmanifest", self.location.href).pathname &&
+    [...url.searchParams.keys()].every((key) => key === "v");
+  if (url.search && !versionedNavigation && !versionedManifest) return;
   const normalized = new URL(url);
   normalized.search = "";
   const cacheKey = url.search ? normalized.href : event.request;
